@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -9,9 +8,9 @@ import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading } from '@/redux/authSlice'
-import store from '@/redux/store'
+import { setLoading, setUser } from '@/redux/authSlice'
 import { Loader } from 'lucide-react'
+import { useState } from 'react'
 
 export const Login = () => {
     const [input, setInput] = useState({
@@ -40,6 +39,7 @@ export const Login = () => {
                 withCredentials: true
             });
             if (res.data.success) {
+                dispatch(setUser(res.data.user));
                 navigate("/");
                 toast.success(res.data.message);
             }
@@ -119,7 +119,7 @@ export const Login = () => {
                             </Button>
                     }
 
-                    <span className='text-sm block text-center'>Don't have an account? <Link to="/signup" className='text-purple-600 hover:text-purple-900'>Signup</Link></span>
+                    <span className='text-sm block text-center'>Do not have an account? <Link to="/signup" className='text-purple-600 hover:text-purple-900'>Signup</Link></span>
                 </form>
             </div>
         </div>

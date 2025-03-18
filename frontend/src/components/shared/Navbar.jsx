@@ -1,13 +1,13 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Popover, PopoverTrigger, PopoverContent } from '@radix-ui/react-popover';
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar';
 import { User2, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
-  const user =true;
 
+  const {user} = useSelector(store => store.auth);
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="flex h-16 items-center justify-between px-4 mx-auto max-w-7xl">
