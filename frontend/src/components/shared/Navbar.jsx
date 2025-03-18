@@ -6,7 +6,7 @@ import { User2, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 
 const Navbar = () => {
-  const user = false;
+  const user =true;
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
