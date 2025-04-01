@@ -33,7 +33,7 @@ const Navbar = () => {
         <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="flex h-16 items-center justify-between px-4 mx-auto max-w-7xl">
                 <Link to="/" className="flex items-center space-x-2">
-                    <h1 className="text-2xl font-bold tracking-tight">Job<span className="text-purple-600">Portal</span></h1>
+                    <h1 className="text-2xl font-bold tracking-tight">Carevo<span className="text-purple-600">Portal</span></h1>
                 </Link>
 
                 <div className="flex items-center gap-8">

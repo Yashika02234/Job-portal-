@@ -13,6 +13,10 @@ const Job = ({job}) => {
         const timeDifference = currentTime - createdAt;
         return Math.floor(timeDifference/(1000*24*60*60))
     }
+    const handleDetailButton = () => {
+        console.log("job:", job);
+        if(job._id) navigate(`/description/${job._id}`)
+    }
     return (
         <div className="p-6 rounded-lg shadow-lg bg-white border border-gray-200 max-w-lg mx-auto">
             {/* Header Section */}
@@ -55,7 +59,7 @@ const Job = ({job}) => {
 
             {/* Apply Button */}
             <div className="mt-5 flex item-center gap-4">
-                <Button onClick={()=>navigate(`/description/${job._id}`)} variant='outline'>Details</Button>
+                <Button onClick={handleDetailButton} variant='outline'>Details</Button>
                 <Button className="px-6 py-2 bg-[#7209b7] text-white font-medium rounded-md hover:bg-blue-700 transition">
                     Saved for Later
                 </Button>

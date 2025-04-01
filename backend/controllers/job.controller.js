@@ -1,5 +1,4 @@
 import { Job } from "../models/job.model.js";
-
 // admin posts the job
 export const postJob = async (req, res) => {
   try {
@@ -53,7 +52,6 @@ export const postJob = async (req, res) => {
     console.log(error);
   }
 };
-
 //for students
 export const getAllJobs = async (req, res) => {
   try {
@@ -76,7 +74,6 @@ export const getAllJobs = async (req, res) => {
         success: false,
       });
     }
-
     return res.status(200).json({
       message: "Jobs found",
       jobs,
@@ -86,12 +83,13 @@ export const getAllJobs = async (req, res) => {
     console.log(error);
   }
 };
-
 // for students
 export const getJobById = async (req, res) => {
   try {
     const jobId = req.params.id;
-    const job = await Job.findById(jobId);
+    const job = await Job.findById(jobId).populate({
+      path:"applications"
+    });
     if (!job) {
       return res.status(404).json({
         message: "Job not found",
@@ -108,7 +106,6 @@ export const getJobById = async (req, res) => {
     console.log(error);
   }
 };
-
 // all the jobs created by admin
 export const getAdminJobs = async (req, res) => {
   try {
@@ -120,7 +117,6 @@ export const getAdminJobs = async (req, res) => {
         success: false,
       });
     }
-
     return res.status(200).json({
       message: "Jobs found",
       jobs,
