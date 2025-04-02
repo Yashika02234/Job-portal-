@@ -3,6 +3,7 @@ import { Bookmark } from 'lucide-react'
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 const Job = ({job}) => {
     const navigate = useNavigate();
@@ -66,6 +67,21 @@ const Job = ({job}) => {
             </div>
         </div>
     )
+}
+Job.propTypes = {
+    job: PropTypes.shape({
+        _id: PropTypes.string,
+        createdAt: PropTypes.string,
+        company: PropTypes.shape({
+            name: PropTypes.string,
+        }),
+        location: PropTypes.string,
+        title: PropTypes.string,
+        description: PropTypes.string,
+        position: PropTypes.number,
+        jobType: PropTypes.string,
+        salary: PropTypes.number,
+    }).isRequired,
 }
 
 export default Job 

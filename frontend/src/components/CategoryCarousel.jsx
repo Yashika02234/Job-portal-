@@ -1,4 +1,3 @@
-import React from 'react'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
 import { Button } from './ui/button';
 
@@ -16,7 +15,7 @@ const CategoryCarousel = () => {
         <CarouselContent>
           {
             catagory.map((cat, index) => (
-              <CarouselItem className='md:basis-1/2 lg-basis-1/3'>
+              <CarouselItem key={index} className='md:basis-1/2 lg-basis-1/3'>
                 <Button variant='outline' className='rounded-full'>
                   {cat}
                 </Button>
