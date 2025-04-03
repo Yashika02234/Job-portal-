@@ -15,7 +15,9 @@ const Companies = () => {
                         className="w-fit"
                         placeholder="Filter by name"
                     />
-                    <Button onClick={() => navigate("/admin/companies/create")}>New Company</Button>
+                    <Button onClick={() => navigate("/admin/companies/create")}
+                        className="bg-black text-white hover:text-black"    
+                    >New Company</Button>
                 </div>
                 <CompaniesTable/>
             </div>
