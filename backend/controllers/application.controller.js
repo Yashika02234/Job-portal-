@@ -1,5 +1,7 @@
 import { Application } from "../models/application.model.js";
 import { Job } from "../models/job.model.js";
+import { User } from "../models/user.model.js";
+import { sendJobApplicationEmail } from "../utils/emailService.js"; // Import the email service
 
 export const applyJob = async (req, res) => {
   try {
@@ -24,14 +26,27 @@ export const applyJob = async (req, res) => {
       });
     }
 
-    // check if job exist
-    const job = await Job.findById(jobId);
+    // Check if the job exists and populate the company details
+    const job = await Job.findById(jobId).populate({
+      path: "company",
+      populate: { path: "userId" }, // Fetch recruiter from company
+    });
+
     if (!job) {
       return res.status(404).json({
         message: "Job not found",
         success: false,
       });
     }
+
+    if (!job.company || !job.company.userId) {
+      return res.status(404).json({
+        message: "Company or recruiter not found",
+        success: false,
+      });
+    }
+
+    const recruiter = job.company.userId; // Recruiter is the user who owns the company
 
     //create a new application
     const newApplication = await Application.create({
@@ -41,9 +56,21 @@ export const applyJob = async (req, res) => {
     job.applications.push(newApplication._id);
     await job.save();
 
+    // Fetch the applicant's details
+    const applicant = await User.findById(userId);
+    if (!applicant) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+     // Send Email Notification to the Recruiter
+     await sendJobApplicationEmail(recruiter._id, job, applicant);
+
     return res.status(201).json({
       message: "Job applied Successfully",
-      success: false,
+      success: true,
     });
   } catch (error) {
     console.log(error);

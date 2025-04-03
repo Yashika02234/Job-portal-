@@ -1,4 +1,6 @@
 import { Job } from "../models/job.model.js";
+import { sendJobNotificationEmails } from "../utils/emailService.js"; // Import the email service
+
 // admin posts the job
 export const postJob = async (req, res) => {
   try {
@@ -27,7 +29,7 @@ export const postJob = async (req, res) => {
       !companyId
     ) {
       return res.status(400).json({
-        message: "Somethin is missing.",
+        message: "Something is missing.",
         success: false,
       });
     }
@@ -43,6 +45,10 @@ export const postJob = async (req, res) => {
       company: companyId,
       created_by: userId,
     });
+
+     // Send email notifications
+     await sendJobNotificationEmails(title, description);
+
     return res.status(201).json({
       message: "New job created successfully.",
       job,

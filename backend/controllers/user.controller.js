@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import { sendWelcomeEmail } from "../utils/emailService.js";
 
 export const register = async (req, res) => {
   try {
@@ -38,6 +39,9 @@ export const register = async (req, res) => {
         profilePhoto:cloudResponse.secure_url,
       }
     });
+
+    // Send welcome email after successful registration
+    await sendWelcomeEmail(req.id);
 
     return res
       .status(201)
