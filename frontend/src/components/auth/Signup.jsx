@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader } from 'lucide-react'
 
-export const Signup = () => {
+const Signup = () => {
     const [input, setInput] = useState({
         fullname: "",
         email: "",
@@ -183,3 +183,6 @@ export const Signup = () => {
         </div>
     );
 };
+
+
+export default Signup

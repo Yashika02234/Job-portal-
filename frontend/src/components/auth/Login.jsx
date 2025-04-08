@@ -12,7 +12,7 @@ import { setLoading, setUser } from '@/redux/authSlice'
 import { Loader } from 'lucide-react'
 import { useState } from 'react'    
 
-export const Login = () => {
+const Login = () => {
     const [input, setInput] = useState({
         email: "",
         password: "",
@@ -125,3 +125,6 @@ export const Login = () => {
         </div>
     )
 }
+
+
+export default Login
