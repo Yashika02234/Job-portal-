@@ -75,7 +75,7 @@ export const sendWelcomeEmail = async (userId) => {
  * @param {string} title - Job title
  * @param {string} description - Job description
  */
-export const sendJobNotificationEmails = async (title, description) => {
+export const  sendJobNotificationEmails = async (title, description) => {
     try {
       // Fetch all user emails
       const users = await User.find().select("email");

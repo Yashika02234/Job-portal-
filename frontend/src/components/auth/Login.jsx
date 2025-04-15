@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
@@ -6,11 +7,10 @@ import { Button } from '../ui/button'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { USER_API_END_POINT } from '@/utils/constant'
-import { toast } from 'sonner';
+import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser } from '@/redux/authSlice'
-import { Loader } from 'lucide-react'
-import { useState } from 'react'    
+import { Loader2 } from 'lucide-react'
 
 const Login = () => {
     const [input, setInput] = useState({
@@ -18,73 +18,70 @@ const Login = () => {
         password: "",
         role: "",
     });
-
-    const { loading } = useSelector(store => store.auth)
-
+    const { loading,user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
     const submitHandler = async (e) => {
         e.preventDefault();
-
         try {
             dispatch(setLoading(true));
             const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                withCredentials: true
+                withCredentials: true,
             });
             if (res.data.success) {
                 dispatch(setUser(res.data.user));
                 navigate("/");
                 toast.success(res.data.message);
             }
-            console.log(input);
         } catch (error) {
             console.log(error);
             toast.error(error.response.data.message);
         } finally {
             dispatch(setLoading(false));
         }
-
-    };
-
+    }
+    useEffect(()=>{
+        if(user){
+            navigate("/");
+        }
+    },[])
     return (
-        <div className="bg-gray-100 min-h-screen">
+        <div>
             <Navbar />
-            <div className="flex items-center justify-center max-w-5xl mx-auto">
-                <form onSubmit={submitHandler} className="w-3/5 border border-gray-300 shadow-lg bg-white rounded-lg p-8 my-12">
-                    <h1 className="font-semibold text-2xl mb-6 text-center text-gray-700">
-                        Login
-                    </h1>
-                    <div className="mb-4">
-                        <Label className="text-gray-700">Email</Label>
+            <div className='flex items-center justify-center max-w-7xl mx-auto'>
+                <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10'>
+                    <h1 className='font-bold text-xl mb-5'>Login</h1>
+                    <div className='my-2'>
+                        <Label>Email</Label>
                         <Input
                             type="email"
-                            placeholder="Enter your email"
                             value={input.email}
                             name="email"
                             onChange={changeEventHandler}
-                            className="border-gray-300 focus:border-purple-600 transition duration-400"
+                            placeholder="patel@gmail.com"
                         />
                     </div>
-                    <div className="mb-4">
-                        <Label className="text-gray-700">Password</Label>
+
+                    <div className='my-2'>
+                        <Label>Password</Label>
                         <Input
                             type="password"
-                            placeholder="Enter your password"
                             value={input.password}
                             name="password"
                             onChange={changeEventHandler}
-                            className="border-gray-300 focus:border-purple-600 transition duration-400"
+                            placeholder="patel@gmail.com"
                         />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <RadioGroup className="flex items-center gap-6 my-5">
+                    <div className='flex items-center justify-between'>
+                        <RadioGroup className="flex items-center gap-4 my-5">
                             <div className="flex items-center space-x-2">
                                 <Input
                                     type="radio"
@@ -92,9 +89,9 @@ const Login = () => {
                                     value="student"
                                     checked={input.role === 'student'}
                                     onChange={changeEventHandler}
-                                    className="cursor-pointer transition duration-400"
+                                    className="cursor-pointer"
                                 />
-                                <Label className="text-gray-700">Student</Label>
+                                <Label htmlFor="r1">Student</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Input
@@ -103,28 +100,20 @@ const Login = () => {
                                     value="recruiter"
                                     checked={input.role === 'recruiter'}
                                     onChange={changeEventHandler}
-                                    className="cursor-pointer transition duration-400"
+                                    className="cursor-pointer"
                                 />
-                                <Label className="text-gray-700">Recruiter</Label>
+                                <Label htmlFor="r2">Recruiter</Label>
                             </div>
                         </RadioGroup>
                     </div>
                     {
-                        loading ?
-                            <Button>
-                                <Loader className='mr-2 h-4 w-4 animate-spin' />
-                                please wait
-                            </Button> : <Button type="submit" className="w-full my-6 bg-black text-white font-semibold py-2 rounded-lg transition-all duration-300 hover:bg-purple-700 hover:shadow-lg">
-                                Login
-                            </Button>
+                        loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Login</Button>
                     }
-
-                    <span className='text-sm block text-center'>Do not have an account? <Link to="/signup" className='text-purple-600 hover:text-purple-900'>Signup</Link></span>
+                    <span className='text-sm'>Don't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link></span>
                 </form>
             </div>
         </div>
     )
 }
-
 
 export default Login
