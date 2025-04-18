@@ -1,13 +1,12 @@
-import Navbar from './shared/Navbar'
-import HeroSection from './HeroSection'
+import useGetAllJobs from '@/hooks/useGetAllJobs'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import CategoryCarousel from './CategoryCarousel'
+import HeroSection from './HeroSection'
 import LatestJobs from './LatestJobs'
 import Footer from './shared/Footer'
-import useGetAllJobs from '@/hooks/useGetAllJobs'
-import { useSelector } from 'react-redux'
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { BackGroundLayout } from './admin/Layouts/BackgroudLayout'
+import Navbar from './shared/Navbar'
 
 const Home = () => {
   useGetAllJobs();
