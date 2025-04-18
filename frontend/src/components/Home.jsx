@@ -7,6 +7,7 @@ import useGetAllJobs from '@/hooks/useGetAllJobs'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BackGroundLayout } from './admin/Layouts/BackgroudLayout'
 
 const Home = () => {
   useGetAllJobs();
@@ -18,13 +19,13 @@ const Home = () => {
     }
   }, []);
   return (
-    <div>
+    <>
       <Navbar />
       <HeroSection />
       <CategoryCarousel />
       <LatestJobs />
       <Footer />
-    </div>
+    </>
   );
 };
 

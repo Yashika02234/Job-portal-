@@ -14,6 +14,7 @@ import PostJob from './components/admin/PostJob'
 import Applicants from './components/admin/Applicants'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import JobDescription from './components/JobsDescription'
+import { BackGroundLayout } from './components/admin/Layouts/BackgroudLayout'
 
 
 const appRouter = createBrowserRouter([
@@ -70,13 +71,19 @@ const appRouter = createBrowserRouter([
     path:"/admin/jobs/:id/applicants",
     element:<ProtectedRoute><Applicants/></ProtectedRoute> 
   },
+  {
+    path: '/background',
+    element: <BackGroundLayout />
+  }
 
 ])
 function App() {
 
   return (
     <div>
-      <RouterProvider router={appRouter} />
+      <BackGroundLayout>
+        <RouterProvider router={appRouter} />
+      </BackGroundLayout>
     </div>
   )
 }
