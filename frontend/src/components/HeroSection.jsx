@@ -1,30 +1,44 @@
-
 import { setSearchedQuery } from '@/redux/jobSlice';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
+import { motion } from 'framer-motion';
 
 const HeroSection = () => {
     const [query, setQuery] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { user } = useSelector(store => store.auth);
 
     const searchJobHandler = () => {
         dispatch(setSearchedQuery(query));
-        navigate("/browse");
+        navigate("/jobs");
     }
+
+    const exploreJobsHandler = () => {
+        navigate("/jobs");
+    };
 
     return (
         <div className='text-center relative text-white'>
             <div className='flex lg:flex-row items-center justify-around mt-12 px-6 lg:px-16'>
                 <div className='flex flex-col gap-6 max-w-2xl text-center lg:text-left'>
-                    <span className='inline-block w-fit lg:mx-0 px-4 py-2 rounded-full text-[#F83002] font-medium text-xl bg-white shadow-sm'>
-                        India's Leading Job Search Platform
-                    </span>
+                    {user && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="mb-2"
+                        >
+                            <h2 className="text-2xl lg:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                                Hey {user.fullname}, welcome back!
+                            </h2>
+                        </motion.div>
+                    )}
 
-                    <h1 className='text-4xl lg:text-5xl font-bold leading-tigh text-gray-300'>
+                    <h1 className='text-4xl lg:text-5xl font-bold leading-tight text-gray-300'>
                         Discover Opportunities &<br />
                         Advance Your <span className='text-[#6A38C2]'>Career</span>
                     </h1>

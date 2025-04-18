@@ -29,7 +29,7 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await User.create({
+    const newUser = await User.create({
       fullname,
       email,
       phoneNumber,
@@ -41,7 +41,7 @@ export const register = async (req, res) => {
     });
 
     // Send welcome email after successful registration
-    await sendWelcomeEmail(req.id);
+    await sendWelcomeEmail(newUser._id);
 
     return res
       .status(201)

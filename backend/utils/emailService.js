@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
     secure: true, // true for 465, false for other ports
     port: 465, 
     auth: {
-      user: process.env.ADMIN_EMAIL || "ayushranjan132005@gmail.com",
-      pass: process.env.ADMIN_EMAIL_PASSWORD,
+      user: "ayushranjan132005@gmail.com",
+      pass: "inep jrhv npgl tudj",
     },
   });
 
@@ -46,7 +46,7 @@ const transporter = nodemailer.createTransport({
 export const sendWelcomeEmail = async (userId) => {
   try {
     // Fetch user details from MongoDB using Mongoose
-    const user = await User.findById(userId).select("email");
+    const user = await User.findById(userId).select("email fullname");
 
     if (!user) {
       throw new Error("User not found.");

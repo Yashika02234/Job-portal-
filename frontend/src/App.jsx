@@ -5,9 +5,12 @@ import Companies from './components/admin/Companies'
 import CompanyCreate from './components/admin/CompanyCreate'
 import CompanySetup from './components/admin/CompanySetup'
 import PostJob from './components/admin/PostJob'
+import JobEdit from './components/admin/JobEdit'
 import ProtectedRoute from './components/admin/ProtectedRoute'
+import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
 import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
+import AboutUs from './components/AboutUs'
 import Browse from './components/Browse'
 import Home from './components/Home'
 import Jobs from './components/Jobs'
@@ -36,6 +39,10 @@ const appRouter = createBrowserRouter([
   {
     path: "/description/:id",
     element: <JobDescription />
+  },
+  {
+    path: "/about",
+    element: <AboutUs />
   },
   {
     path: "/browse",
@@ -69,6 +76,14 @@ const appRouter = createBrowserRouter([
   {
     path:"/admin/jobs/:id/applicants",
     element:<ProtectedRoute><Applicants/></ProtectedRoute> 
+  },
+  {
+    path:"/admin/jobs/:id/edit",
+    element:<ProtectedRoute><JobEdit/></ProtectedRoute> 
+  },
+  {
+    path:"/admin/analytics",
+    element:<ProtectedRoute><AnalyticsDashboard/></ProtectedRoute> 
   },
   {
     path: '/background',
