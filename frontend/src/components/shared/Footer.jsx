@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Twitter, Linkedin, Facebook, Mail, Heart } from 'lucide-react';
+import { Github, Twitter, Linkedin, Facebook, Mail, Heart, Sparkles } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,7 +10,14 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-white font-bold text-lg mb-4">Job Portal</h3>
+            <div className="mb-4">
+              <h3 className="text-white font-bold text-2xl inline-flex items-center">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600">
+                  Carevo
+                </span>
+                <Sparkles className="w-4 h-4 text-purple-400 ml-1" />
+              </h3>
+            </div>
             <p className="text-gray-400 mb-4">
               Find your dream job or the perfect candidate for your company. 
               Our platform connects talented professionals with the right opportunities.
@@ -46,7 +53,7 @@ const Footer = () => {
         
         <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © {currentYear} Job Portal. All rights reserved.
+            © {currentYear} Carevo. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
@@ -56,7 +63,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-6 text-center text-gray-500 text-xs flex items-center justify-center">
-          Made with <Heart className="h-3 w-3 text-red-500 mx-1" /> by Job Portal Team
+          Made with <Heart className="h-3 w-3 text-red-500 mx-1" /> by Carevo Team
         </div>
       </div>
     </footer>

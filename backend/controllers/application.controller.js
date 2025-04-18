@@ -142,7 +142,20 @@ export const updateStatus = async (req, res) => {
     }
 
     // find the application by applicantion_id
-    const application = await Application.findOne({ _id: applicationId });
+    const application = await Application.findById(applicationId)
+      .populate({
+        path: "applicant",
+        select: "email fullname"
+      })
+      .populate({
+        path: "job",
+        select: "title company",
+        populate: {
+          path: "company",
+          select: "name"
+        }
+      });
+      
     if (!application) {
       return res.status(404).json({
         message: "Application not found.",
@@ -154,11 +167,137 @@ export const updateStatus = async (req, res) => {
     application.status = status.toLowerCase();
     await application.save();
 
+    // Send notification email to the applicant about status change
+    const applicant = application.applicant;
+    const job = application.job;
+    
+    if (applicant && applicant.email) {
+      let emailSubject = '';
+      let emailBody = '';
+      
+      if (status.toLowerCase() === 'shortlisted') {
+        emailSubject = `You've been shortlisted for ${job.title} at ${job.company.name}`;
+        emailBody = `Dear ${applicant.fullname},\n\nCongratulations! You have been shortlisted for the position of ${job.title} at ${job.company.name}.\n\nPlease check your account dashboard for more information.\n\nBest regards,\n${job.company.name} Recruitment Team`;
+      } else if (status.toLowerCase() === 'rejected') {
+        emailSubject = `Update on your application for ${job.title} at ${job.company.name}`;
+        emailBody = `Dear ${applicant.fullname},\n\nThank you for your interest in the ${job.title} position at ${job.company.name}.\n\nAfter careful consideration, we have decided to pursue other candidates whose qualifications more closely match our current needs.\n\nWe appreciate your interest in ${job.company.name} and wish you the best in your job search.\n\nBest regards,\n${job.company.name} Recruitment Team`;
+      }
+      
+      if (emailSubject && emailBody) {
+        try {
+          await sendStatusUpdateEmail(applicant.email, emailSubject, emailBody);
+        } catch (emailError) {
+          console.error("Error sending status update email:", emailError);
+          // Continue processing even if email fails
+        }
+      }
+    }
+
     return res.status(200).json({
       message: "Status updated successfully.",
       success: true,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "An error occurred while updating status.",
+      success: false,
+    });
   }
+};
+
+// Send interview invitation email to applicant
+export const sendInterviewEmail = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const applicationId = req.params.id;
+    
+    if (!message) {
+      return res.status(400).json({
+        message: "Email message is required",
+        success: false,
+      });
+    }
+
+    // Find the application with applicant and job details
+    const application = await Application.findById(applicationId)
+      .populate({
+        path: "applicant",
+        select: "email fullname"
+      })
+      .populate({
+        path: "job",
+        select: "title company",
+        populate: {
+          path: "company",
+          select: "name"
+        }
+      });
+      
+    if (!application) {
+      return res.status(404).json({
+        message: "Application not found.",
+        success: false,
+      });
+    }
+
+    const applicant = application.applicant;
+    const job = application.job;
+    
+    if (!applicant || !applicant.email) {
+      return res.status(404).json({
+        message: "Applicant email not found.",
+        success: false,
+      });
+    }
+
+    // Send interview email
+    const emailSubject = `Interview Invitation: ${job.title} at ${job.company.name}`;
+    
+    try {
+      await sendStatusUpdateEmail(applicant.email, emailSubject, message);
+      
+      // Update application status to shortlisted
+      application.status = 'shortlisted';
+      await application.save();
+      
+      return res.status(200).json({
+        message: "Interview invitation sent successfully.",
+        success: true,
+      });
+    } catch (emailError) {
+      console.error("Error sending interview email:", emailError);
+      return res.status(500).json({
+        message: "Failed to send interview invitation.",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "An error occurred while sending interview invitation.",
+      success: false,
+    });
+  }
+};
+
+// Helper function to send status update emails
+const sendStatusUpdateEmail = async (email, subject, message) => {
+  // Use your existing email service or implement a new one
+  // This is a simplified version - replace with your actual email sending implementation
+  console.log(`Sending email to ${email}`);
+  console.log(`Subject: ${subject}`);
+  console.log(`Message: ${message}`);
+  
+  // For example, if you're using nodemailer:
+  // const transporter = nodemailer.createTransport({...});
+  // await transporter.sendMail({
+  //   from: 'company@example.com',
+  //   to: email,
+  //   subject: subject,
+  //   text: message
+  // });
+  
+  // For now, just return success
+  return true;
 };

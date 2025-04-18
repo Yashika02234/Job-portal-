@@ -172,6 +172,12 @@ const Navbar = () => {
                                     Analytics
                                 </NavLink>
                             </motion.li>
+                            <motion.li custom={4} variants={navLinksVariants} initial="hidden" animate="visible">
+                                <NavLink to="/about" isActive={isActive('/about')}>
+                                    <Search className="w-4 h-4 mr-1.5" />
+                                    About Us
+                                </NavLink>
+                            </motion.li>
                         </>
                     ) : (
                         <>
@@ -378,20 +384,26 @@ const Navbar = () => {
                                     <>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/admin/companies" onClick={toggleMobileMenu}>
-                                                <Briefcase className="w-5 h-5 mr-3" />
+                                                <Briefcase className="w-5 h-5 mr-3 text-purple-400" />
                                                 Companies
                                             </MobileNavLink>
                                         </motion.li>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/admin/jobs" onClick={toggleMobileMenu}>
-                                                <Search className="w-5 h-5 mr-3" />
+                                                <Search className="w-5 h-5 mr-3 text-purple-400" />
                                                 Jobs
                                             </MobileNavLink>
                                         </motion.li>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/admin/analytics" onClick={toggleMobileMenu}>
-                                                <BarChart3 className="w-5 h-5 mr-3" />
+                                                <BarChart3 className="w-5 h-5 mr-3 text-purple-400" />
                                                 Analytics
+                                            </MobileNavLink>
+                                        </motion.li>
+                                        <motion.li variants={itemVariants}>
+                                            <MobileNavLink to="/about" onClick={toggleMobileMenu}>
+                                                <Search className="w-5 h-5 mr-3 text-purple-400" />
+                                                About Us
                                             </MobileNavLink>
                                         </motion.li>
                                     </>
@@ -399,19 +411,19 @@ const Navbar = () => {
                                     <>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/" onClick={toggleMobileMenu}>
-                                                <Home className="w-5 h-5 mr-3" />
+                                                <Home className="w-5 h-5 mr-3 text-purple-400" />
                                                 Home
                                             </MobileNavLink>
                                         </motion.li>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/jobs" onClick={toggleMobileMenu}>
-                                                <Briefcase className="w-5 h-5 mr-3" />
+                                                <Briefcase className="w-5 h-5 mr-3 text-purple-400" />
                                                 Jobs
                                             </MobileNavLink>
                                         </motion.li>
                                         <motion.li variants={itemVariants}>
                                             <MobileNavLink to="/about" onClick={toggleMobileMenu}>
-                                                <Search className="w-5 h-5 mr-3" />
+                                                <Search className="w-5 h-5 mr-3 text-purple-400" />
                                                 About Us
                                             </MobileNavLink>
                                         </motion.li>

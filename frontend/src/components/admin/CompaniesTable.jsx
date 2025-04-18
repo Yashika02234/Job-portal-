@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import { Edit2, MoreHorizontal, Eye, Briefcase, Building, Users, Share2, Trash2, ExternalLink, PlusCircle } from 'lucide-react'
+import { Edit2, MoreHorizontal, Eye, Briefcase, Building, Users, Share2, Trash2, ExternalLink, PlusCircle, ChevronRight } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -23,8 +23,6 @@ const CompaniesTable = () => {
     const [filterCompany, setFilterCompany] = useState(companies);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [companyToDelete, setCompanyToDelete] = useState(null);
-    const [companyDetailsOpen, setCompanyDetailsOpen] = useState(false);
-    const [selectedCompany, setSelectedCompany] = useState(null);
     
     const navigate = useNavigate();
     
@@ -53,10 +51,9 @@ const CompaniesTable = () => {
         setDeleteConfirmOpen(true);
     };
     
-    // Open company details
+    // View company details by navigating to dedicated page
     const viewCompanyDetails = (company) => {
-        setSelectedCompany(company);
-        setCompanyDetailsOpen(true);
+        navigate(`/admin/companies/details/${company._id}`);
     };
     
     return (
@@ -239,162 +236,8 @@ const CompaniesTable = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            
-            {/* Company Details Dialog */}
-            <Dialog open={companyDetailsOpen} onOpenChange={setCompanyDetailsOpen}>
-                <DialogContent className="bg-slate-900 border-slate-800 text-white max-w-3xl overflow-auto max-h-[90vh]">
-                    <DialogHeader>
-                        <DialogTitle>Company Details</DialogTitle>
-                    </DialogHeader>
-                    
-                    {selectedCompany && (
-                        <div className="space-y-6">
-                            {/* Company Header */}
-                            <div className="flex flex-col md:flex-row gap-4 items-start">
-                                <Avatar className="h-20 w-20 rounded-md border border-slate-700">
-                                    {selectedCompany.logo ? (
-                                        <AvatarImage src={selectedCompany.logo} alt={selectedCompany.name} />
-                                    ) : (
-                                        <AvatarFallback className="rounded-md bg-gradient-to-br from-indigo-600 to-purple-600 text-white text-2xl">
-                                            {selectedCompany.name?.charAt(0)}
-                                        </AvatarFallback>
-                                    )}
-                                </Avatar>
-                                
-                                <div className="flex-1">
-                                    <h2 className="text-2xl font-bold text-white">{selectedCompany.name}</h2>
-                                    <p className="text-gray-400 mt-1">{selectedCompany.industry || "Technology"}</p>
-                                    
-                                    <div className="flex flex-wrap gap-2 mt-3">
-                                        <Badge className="bg-purple-500/20 border border-purple-500/30 text-white">
-                                            {selectedCompany.location || "Remote"}
-                                        </Badge>
-                                        <Badge className="bg-blue-500/20 border border-blue-500/30 text-white">
-                                            {selectedCompany.size || "10-50 employees"}
-                                        </Badge>
-                                        <Badge className="bg-green-500/20 border border-green-500/30 text-white">
-                                            Active
-                                        </Badge>
-                                    </div>
-                                </div>
-                                
-                                <div className="flex flex-col gap-2">
-                                    <Button 
-                                        onClick={() => navigate(`/admin/companies/${selectedCompany._id}`)}
-                                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white w-full"
-                                    >
-                                        <Edit2 className="mr-2 h-4 w-4" /> Edit Company
-                                    </Button>
-                                    <Button 
-                                        onClick={() => {
-                                            setCompanyDetailsOpen(false);
-                                            navigate(`/admin/jobs/create?company=${selectedCompany._id}`);
-                                        }}
-                                        variant="outline"
-                                        className="border-purple-500/30 text-white hover:bg-purple-500/20 w-full"
-                                    >
-                                        <PlusCircle className="mr-2 h-4 w-4" /> Post New Job
-                                    </Button>
-                                </div>
-                            </div>
-                            
-                            {/* Company Details */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                                    <h3 className="font-medium text-white mb-2 flex items-center">
-                                        <Building className="mr-2 h-4 w-4 text-purple-400" />
-                                        About Company
-                                    </h3>
-                                    <p className="text-gray-400 text-sm">
-                                        {selectedCompany.description || 
-                                        "This company has not provided a description yet. Edit the company profile to add details about the company mission, values and culture."}
-                                    </p>
-                                </div>
-                                
-                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                                    <h3 className="font-medium text-white mb-2 flex items-center">
-                                        <Briefcase className="mr-2 h-4 w-4 text-blue-400" />
-                                        Job Stats
-                                    </h3>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Active Jobs</span>
-                                            <Badge variant="outline" className="bg-slate-700/50">
-                                                {selectedCompany.jobCount || 0}
-                                            </Badge>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Total Applications</span>
-                                            <Badge variant="outline" className="bg-slate-700/50">
-                                                {selectedCompany.applicationCount || "42"}
-                                            </Badge>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Registered On</span>
-                                            <span className="text-white text-sm">
-                                                {selectedCompany.createdAt ? new Date(selectedCompany.createdAt).toLocaleDateString() : 'N/A'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            {/* Company Contact & Website */}
-                            <div className="flex flex-col md:flex-row gap-4">
-                                <div className="flex-1 bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                                    <h3 className="font-medium text-white mb-2 flex items-center">
-                                        <Share2 className="mr-2 h-4 w-4 text-emerald-400" />
-                                        Contact Information
-                                    </h3>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Email</span>
-                                            <span className="text-white text-sm">{selectedCompany.email || "contact@example.com"}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Phone</span>
-                                            <span className="text-white text-sm">{selectedCompany.phone || "+1 (555) 123-4567"}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-gray-400 text-sm">Location</span>
-                                            <span className="text-white text-sm">{selectedCompany.location || "San Francisco, CA"}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="flex-1 bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                                    <h3 className="font-medium text-white mb-2 flex items-center">
-                                        <ExternalLink className="mr-2 h-4 w-4 text-amber-400" />
-                                        Website & Social
-                                    </h3>
-                                    <div className="space-y-2">
-                                        <Button 
-                                            variant="outline" 
-                                            className="w-full border-slate-700 text-white hover:bg-slate-700 mt-2"
-                                            onClick={() => window.open(selectedCompany.website || "#", '_blank')}
-                                        >
-                                            <ExternalLink className="mr-2 h-4 w-4" />
-                                            Visit Website
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            className="border-slate-700 text-white hover:bg-slate-800"
-                            onClick={() => setCompanyDetailsOpen(false)}
-                        >
-                            Close
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
-    )
-}
+    );
+};
 
-export default CompaniesTable
+export default CompaniesTable;

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
     :root {
       --background: 0 0% 100%;
@@ -72,4 +73,43 @@
     body {
       @apply bg-background text-foreground;
     }
+  }
+
+  /* Dark mode overrides for Select component */
+  [data-radix-select-content] {
+    background-color: #1e293b !important; /* slate-800 */
+    border-color: #334155 !important; /* slate-700 */
+    color: white !important;
+  }
+
+  [data-radix-select-item][data-highlighted] {
+    background-color: #334155 !important; /* slate-700 */
+    color: white !important;
+  }
+
+  [data-radix-select-item-indicator] svg {
+    color: #a855f7 !important; /* purple-500 */
+  }
+
+  /* Custom dark theme for Select component */
+  .dark-theme .select-content,
+  .dark-theme [data-radix-select-content] {
+    background-color: rgb(15 23 42) !important; /* slate-900 */
+    border-color: rgb(51 65 85) !important; /* slate-700 */
+    color: white !important;
+  }
+
+  .dark-theme [data-radix-select-item] {
+    color: white !important;
+  }
+
+  .dark-theme [data-radix-select-item]:hover,
+  .dark-theme [data-radix-select-item]:focus,
+  .dark-theme [data-radix-select-item][data-highlighted] {
+    background-color: rgb(51 65 85) !important; /* slate-700 */
+    color: white !important;
+  }
+
+  .dark-theme [data-radix-select-item-indicator] svg {
+    color: rgb(168 85 247) !important; /* purple-500 */
   }

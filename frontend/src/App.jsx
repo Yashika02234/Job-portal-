@@ -4,6 +4,7 @@ import Applicants from './components/admin/Applicants'
 import Companies from './components/admin/Companies'
 import CompanyCreate from './components/admin/CompanyCreate'
 import CompanySetup from './components/admin/CompanySetup'
+import CompanyDetails from './components/admin/CompanyDetails'
 import PostJob from './components/admin/PostJob'
 import JobEdit from './components/admin/JobEdit'
 import ProtectedRoute from './components/admin/ProtectedRoute'
@@ -17,6 +18,9 @@ import Jobs from './components/Jobs'
 import JobDescription from './components/JobsDescription'
 import { BackGroundLayout } from './components/Layouts/BackgroudLayout'
 import Profile from './components/Profile'
+import { ThemeProvider } from 'next-themes'
+import './App.css'
+import AllApplicants from './components/admin/AllApplicants'
 
 
 const appRouter = createBrowserRouter([
@@ -66,6 +70,10 @@ const appRouter = createBrowserRouter([
     element:<ProtectedRoute><CompanySetup/></ProtectedRoute> 
   },
   {
+    path:"/admin/companies/details/:id",
+    element:<ProtectedRoute><CompanyDetails/></ProtectedRoute> 
+  },
+  {
     path:"/admin/jobs",
     element:<ProtectedRoute><AdminJobs/></ProtectedRoute> 
   },
@@ -86,19 +94,25 @@ const appRouter = createBrowserRouter([
     element:<ProtectedRoute><AnalyticsDashboard/></ProtectedRoute> 
   },
   {
+    path:"/admin/all-applicants",
+    element:<ProtectedRoute><AllApplicants/></ProtectedRoute> 
+  },
+  {
     path: '/background',
     element: <BackGroundLayout />
   }
 
 ])
-function App() {
 
+function App() {
   return (
-    <div>
-      <BackGroundLayout>
-        <RouterProvider router={appRouter} />
-      </BackGroundLayout>
-    </div>
+    <ThemeProvider defaultTheme="dark" attribute="class">
+      <div className="dark">
+        <BackGroundLayout>
+          <RouterProvider router={appRouter} />
+        </BackGroundLayout>
+      </div>
+    </ThemeProvider>
   )
 }
 

@@ -248,31 +248,30 @@ const Companies = () => {
                                     whileHover={{ y: -5, transition: { duration: 0.2 } }}
                                     className="bg-white/10 backdrop-blur-md rounded-xl p-5 border border-white/20 shadow-lg"
                                 >
-                                    <div className="flex items-start mb-4">
-                                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 h-12 w-12 rounded-md flex items-center justify-center text-white font-bold text-lg">
+                                    <div className="flex items-center mb-3">
+                                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 h-12 w-12 rounded-md flex items-center justify-center text-white font-bold text-xl">
                                             {company.name?.charAt(0)}
                                         </div>
                                         <div className="ml-3">
-                                            <h3 className="font-semibold text-white">{company.name}</h3>
+                                            <h3 className="text-white font-semibold">{company.name}</h3>
                                             <p className="text-gray-400 text-sm">{company.industry || "Technology"}</p>
                                         </div>
                                     </div>
                                     
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                        <Badge className="bg-slate-800/50 border-slate-700 text-white">
-                                            {company.jobCount || 0} jobs
-                                        </Badge>
+                                    <div className="flex items-center justify-between mt-4 text-sm">
+                                        <div className="text-gray-400">{company.jobCount || 0} jobs</div>
                                         <Badge className="bg-green-500/20 border-green-500/30 text-white">
                                             Active
                                         </Badge>
                                     </div>
                                     
-                                    <Button 
-                                        variant="outline" 
-                                        className="w-full border-slate-700 text-white hover:bg-slate-800/70 mt-2"
-                                        onClick={() => navigate(`/admin/companies/${company._id}`)}
+                                    <Button
+                                        onClick={() => navigate(`/admin/companies/details/${company._id}`)}
+                                        variant="ghost"
+                                        className="w-full mt-4 border border-white/10 text-white hover:bg-white/10 flex justify-between items-center"
                                     >
-                                        View Details <ChevronRight className="ml-1 h-4 w-4" />
+                                        View Details
+                                        <ChevronRight className="h-4 w-4" />
                                     </Button>
                                 </motion.div>
                             ))}

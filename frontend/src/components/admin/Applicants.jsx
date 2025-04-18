@@ -15,6 +15,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Footer } from './AnalyticsDashboard';
+import { toast } from 'sonner';
 
 const fadeInUpVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -33,6 +34,7 @@ const Applicants = () => {
     const params = useParams();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [exportLoading, setExportLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const { applicants } = useSelector(store => store.application);
@@ -72,6 +74,98 @@ const Applicants = () => {
         rejected: applicants?.applications?.filter(app => app.status === 'rejected').length || 0,
     };
 
+    // Export applicants data to CSV
+    const exportToCSV = async () => {
+        if (!applicants?.applications || applicants.applications.length === 0) {
+            toast.error("No applicants to export");
+            return;
+        }
+
+        try {
+            setExportLoading(true);
+            
+            // Create headers for CSV
+            const headers = [
+                "Applicant Name",
+                "Email",
+                "Phone Number",
+                "Status",
+                "Applied Date",
+                "Resume URL",
+                "Job Title",
+                "Company",
+                "Location"
+            ];
+
+            // Helper function to escape CSV values
+            const escapeCSV = (value) => {
+                const stringValue = String(value || "");
+                // If the value contains a comma, quote, or newline, wrap it in quotes
+                if (stringValue.includes(",") || stringValue.includes("\"") || stringValue.includes("\n")) {
+                    // Double up any quotes to escape them
+                    return `"${stringValue.replace(/"/g, '""')}"`;
+                }
+                return stringValue;
+            };
+
+            // Format applicant data for CSV
+            const applicantData = applicants.applications.map(app => {
+                const rowData = [
+                    app.user?.fullname || "N/A",
+                    app.user?.email || "N/A",
+                    app.user?.phoneNumber || "N/A",
+                    app.status || "pending",
+                    new Date(app.createdAt).toLocaleDateString(),
+                    app.user?.profile?.resume || "N/A",
+                    currentJob?.title || "N/A",
+                    currentJob?.company?.name || "N/A",
+                    currentJob?.location || "Remote"
+                ];
+                
+                // Escape each value and return the row
+                return rowData.map(escapeCSV);
+            });
+
+            // Combine headers and data
+            const csvContent = [
+                headers.map(escapeCSV),
+                ...applicantData
+            ].map(row => row.join(",")).join("\n");
+
+            // Create a BOM (Byte Order Mark) for correct Excel encoding
+            const BOM = "\uFEFF";
+            const csvContentWithBOM = BOM + csvContent;
+
+            // Create Blob and download with a slight delay to show loading state
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            
+            // Set filename with job title and date
+            const jobTitle = currentJob?.title?.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_') || 'job';
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `${jobTitle}_applicants_${date}.csv`;
+            
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            
+            // Clean up
+            URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+
+            toast.success("CSV file exported successfully");
+        } catch (error) {
+            console.error("Error exporting CSV:", error);
+            toast.error("Failed to export CSV");
+        } finally {
+            setExportLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pb-20">
             <Navbar />
@@ -101,9 +195,20 @@ const Applicants = () => {
                             <Button 
                                 variant="outline"
                                 className="border-slate-700 text-white hover:bg-slate-800"
+                                onClick={exportToCSV}
+                                disabled={exportLoading || loading || !applicants?.applications?.length}
                             >
-                                <Download className="h-4 w-4 mr-2" />
-                                Export CSV
+                                {exportLoading ? (
+                                    <>
+                                        <div className="h-4 w-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                                        Exporting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Export CSV
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -173,20 +278,22 @@ const Applicants = () => {
                                 />
                             </div>
                             
-                            <Select
-                                value={statusFilter}
-                                onValueChange={setStatusFilter}
-                            >
-                                <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                    <SelectItem value="shortlisted">Shortlisted</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <div className="select-wrapper dark-theme">
+                                <Select
+                                    value={statusFilter}
+                                    onValueChange={setStatusFilter}
+                                >
+                                    <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white">
+                                        <SelectValue placeholder="Filter by status" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-900 border-slate-700 text-white">
+                                        <SelectItem value="all" className="text-white focus:bg-slate-700 focus:text-white">All Statuses</SelectItem>
+                                        <SelectItem value="pending" className="text-white focus:bg-slate-700 focus:text-white">Pending</SelectItem>
+                                        <SelectItem value="shortlisted" className="text-white focus:bg-slate-700 focus:text-white">Shortlisted</SelectItem>
+                                        <SelectItem value="rejected" className="text-white focus:bg-slate-700 focus:text-white">Rejected</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     </div>
                     
@@ -213,15 +320,27 @@ const Applicants = () => {
                     
                     {/* Email Templates (Quick Actions) */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800/70">
+                        <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800/70 flex items-center">
                             <Mail className="mr-2 h-4 w-4 text-blue-400" />
-                            Send Interview Invites
+                            Bulk Email Selected
                         </Button>
-                        <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800/70">
+                        <Button 
+                            variant="outline" 
+                            className="border-slate-700 text-white hover:bg-slate-800/70 flex items-center"
+                            onClick={() => {
+                                toast.info("This feature is coming soon");
+                            }}
+                        >
                             <CheckCircle className="mr-2 h-4 w-4 text-green-400" />
                             Bulk Shortlist
                         </Button>
-                        <Button variant="outline" className="border-slate-700 text-white hover:bg-slate-800/70">
+                        <Button 
+                            variant="outline" 
+                            className="border-slate-700 text-white hover:bg-slate-800/70 flex items-center"
+                            onClick={() => {
+                                toast.info("This feature is coming soon");
+                            }}
+                        >
                             <XCircle className="mr-2 h-4 w-4 text-red-400" />
                             Bulk Reject
                         </Button>
