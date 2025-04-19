@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
+import useGetAllAdminJobs from '@/hooks/useGetAllAdminJobs';
 import { 
   Building2, 
   Globe, 
@@ -28,6 +29,34 @@ const CompanyDetails = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [activeJobs, setActiveJobs] = useState([]);
+  useGetAllAdminJobs();
+  const { allAdminJobs } = useSelector(store => store.job);
+  
+  // Get the count of active jobs for this company
+  const getActiveJobsCount = () => {
+    if (!allAdminJobs || !id) return 0;
+    return allAdminJobs.filter(job => 
+      job.company?._id === id && 
+      (job.status === 'active' || !job.status)
+    ).length;
+  };
+  
+  // Get the count of total applicants for this company
+  const getTotalApplicantsCount = () => {
+    if (!allAdminJobs || !id) return 0;
+    return allAdminJobs
+      .filter(job => job.company?._id === id)
+      .reduce((sum, job) => sum + (job.applicants?.length || 0), 0);
+  };
+  
+  // Get the count of closed jobs for this company
+  const getClosedJobsCount = () => {
+    if (!allAdminJobs || !id) return 0;
+    return allAdminJobs.filter(job => 
+      job.company?._id === id && 
+      job.status === 'closed'
+    ).length;
+  };
   
   // Fetch company data
   useEffect(() => {
@@ -133,9 +162,12 @@ const CompanyDetails = () => {
                   <p className="text-indigo-100">{company.industry}</p>
                 </div>
                 <div className="ml-auto space-x-3">
-                  <button className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors">
+                  <button 
+                    onClick={() => navigate(`/admin/jobs?company=${company._id}`)}
+                    className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors"
+                  >
                     <Edit className="h-4 w-4 mr-2" />
-                    Edit
+                    Edit Jobs
                   </button>
                   <button className="inline-flex items-center px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-400 font-medium transition-colors">
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -192,6 +224,48 @@ const CompanyDetails = () => {
                       <p className="text-gray-300 leading-relaxed">
                         {company.description}
                       </p>
+                    </div>
+                    
+                    {/* Company Stats Section */}
+                    <div className="bg-slate-700/50 rounded-lg p-5">
+                      <h2 className="text-xl font-medium mb-4">Company Stats</h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="bg-slate-800 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 mr-3">
+                              <Briefcase className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="text-gray-400 text-sm">Active Jobs</p>
+                              <p className="text-white text-xl font-bold">{getActiveJobsCount()}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-800 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 mr-3">
+                              <Users className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="text-gray-400 text-sm">Total Applicants</p>
+                              <p className="text-white text-xl font-bold">{getTotalApplicantsCount()}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-800 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 mr-3">
+                              <Clock className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <p className="text-gray-400 text-sm">Closed Jobs</p>
+                              <p className="text-white text-xl font-bold">{getClosedJobsCount()}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="bg-slate-700/50 rounded-lg p-5">

@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import CompaniesTable from './CompaniesTable'
 import { useNavigate } from 'react-router-dom'
 import useGetAllCompanies from '@/hooks/useGetAllCompanies'
+import useGetAllAdminJobs from '@/hooks/useGetAllAdminJobs'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSearchCompanyByText } from '@/redux/companySlice'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -13,10 +14,22 @@ import {
     BarChart3, Filter, Calendar, Check, X as XIcon, 
     Gift, Sparkles, Clock, PieChart, BriefcaseBusiness,
     ChevronRight, Globe, LineChart, BookOpen, Rocket,
-    Layers, ShieldCheck, TrendingUp, Trophy
+    Layers, ShieldCheck, TrendingUp, Trophy, Edit,
+    Trash, CalendarRange
 } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import Footer from '../shared/Footer'
+import { toast } from 'sonner'
+import axios from 'axios'
+import { COMPANY_API_END_POINT } from '@/utils/constant'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card"
 
 const fadeInUpVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -33,11 +46,13 @@ const fadeInUpVariants = {
 
 const Companies = () => {
     useGetAllCompanies();
+    useGetAllAdminJobs();
     const [input, setInput] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { user } = useSelector(store => store.auth);
-    const { companies } = useSelector(store => store.company);
+    const { user } = useSelector(state => state.auth);
+    const { companies } = useSelector(state => state.company);
+    const { allAdminJobs } = useSelector(store => store.job);
     const [scrollY, setScrollY] = useState(0);
     
     // Scroll effect for parallax
@@ -60,19 +75,19 @@ const Companies = () => {
         },
         { 
             title: "Active Jobs", 
-            value: companies?.reduce((sum, company) => sum + (company.jobCount || 0), 0), 
+            value: allAdminJobs?.filter(job => job.status === 'active' || !job.status).length || 0, 
             icon: <Briefcase className="h-5 w-5 text-emerald-400" />,
             color: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30"
         },
         { 
             title: "Total Applications", 
-            value: "487", 
+            value: allAdminJobs?.reduce((sum, job) => sum + (job.applicants?.length || 0), 0) || 0, 
             icon: <Users className="h-5 w-5 text-amber-400" />,
             color: "from-amber-500/20 to-orange-500/20 border-amber-500/30"
         },
         { 
-            title: "Hired Candidates", 
-            value: "42", 
+            title: "Closed Jobs", 
+            value: allAdminJobs?.filter(job => job.status === 'closed').length || 0, 
             icon: <Check className="h-5 w-5 text-purple-400" />,
             color: "from-purple-500/20 to-indigo-500/20 border-purple-500/30"
         }
@@ -436,10 +451,10 @@ const Companies = () => {
                             />
                             
                             <QuickActionCard 
-                                title="View Applicants"
-                                description="Review applications for your job postings"
-                                icon={<Users className="h-5 w-5 text-emerald-400" />}
-                                onClick={() => navigate("/admin/jobs")}
+                                title="Edit Company"
+                                description="Update details of your existing companies"
+                                icon={<Edit className="h-5 w-5 text-emerald-400" />}
+                                onClick={() => navigate("/admin/companies/manage")}
                             />
                             
                             <QuickActionCard 

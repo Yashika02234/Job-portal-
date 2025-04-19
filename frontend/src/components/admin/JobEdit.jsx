@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Textarea } from '../ui/textarea';
 import { JOB_API_END_POINT } from '@/utils/constant';
 import Footer from '../shared/Footer';
+import { setAllAdminJobs } from '@/redux/jobSlice';
 
 const jobTypeOptions = [
     { value: 'full-time', label: 'Full Time' },
@@ -35,9 +36,7 @@ const experienceOptions = [
 
 const statusOptions = [
     { value: 'active', label: 'Active', color: 'text-green-400' },
-    { value: 'closed', label: 'Closed', color: 'text-red-400' },
-    { value: 'draft', label: 'Draft', color: 'text-gray-400' },
-    { value: 'pending', label: 'Pending', color: 'text-yellow-400' }
+    { value: 'rejected', label: 'Rejected', color: 'text-red-400' }
 ];
 
 const fadeInUpVariants = {
@@ -83,10 +82,17 @@ const JobEdit = () => {
             setInitialLoading(true);
             try {
                 // First try to get the job from the store
-                const foundJob = allAdminJobs.find(job => job._id === id);
+                const foundJob = allAdminJobs?.find(job => job?._id === id);
                 
                 if (foundJob) {
                     setJob(foundJob);
+                    
+                    // Convert any non-active status to 'rejected' for compatibility
+                    let jobStatus = foundJob.status || "active";
+                    if (jobStatus !== 'active') {
+                        jobStatus = 'rejected';
+                    }
+                    
                     setInput({
                         title: foundJob.title || "",
                         description: foundJob.description || "",
@@ -97,13 +103,20 @@ const JobEdit = () => {
                         experience: foundJob.experience || "",
                         position: foundJob.position || 1,
                         companyId: foundJob.company?._id || "",
-                        status: foundJob.status || "active"
+                        status: jobStatus
                     });
                 } else {
                     // If not in store, fetch from API
                     const res = await axios.get(`${JOB_API_END_POINT}/get/${id}`, { withCredentials: true });
                     if (res.data.success) {
                         setJob(res.data.job);
+                        
+                        // Convert any non-active status to 'rejected' for compatibility
+                        let jobStatus = res.data.job.status || "active";
+                        if (jobStatus !== 'active') {
+                            jobStatus = 'rejected';
+                        }
+                        
                         setInput({
                             title: res.data.job.title || "",
                             description: res.data.job.description || "",
@@ -114,7 +127,7 @@ const JobEdit = () => {
                             experience: res.data.job.experience || "",
                             position: res.data.job.position || 1,
                             companyId: res.data.job.company?._id || "",
-                            status: res.data.job.status || "active"
+                            status: jobStatus
                         });
                     }
                 }
@@ -139,6 +152,16 @@ const JobEdit = () => {
     
     const submitHandler = async (e) => {
         e.preventDefault();
+        
+        // Validate required fields
+        const requiredFields = ['title', 'description', 'requirements', 'salary', 'location', 'jobType', 'experience', 'companyId'];
+        const emptyFields = requiredFields.filter(field => !input[field]);
+        
+        if (emptyFields.length > 0) {
+            toast.error(`Please fill all required fields: ${emptyFields.join(', ')}`);
+            return;
+        }
+        
         try {
             setLoading(true);
             const res = await axios.put(`${JOB_API_END_POINT}/update/${id}`, input, {
@@ -149,16 +172,29 @@ const JobEdit = () => {
             });
             if(res.data.success) {
                 toast.success(res.data.message || "Job updated successfully");
+                
+                // Fetch fresh admin jobs data to update the frontend
+                try {
+                    const jobsRes = await axios.get(`${JOB_API_END_POINT}/getadminjobs`, {withCredentials: true});
+                    if (jobsRes.data.success) {
+                        // Use the setAllAdminJobs action from Redux to update the store
+                        dispatch(setAllAdminJobs(jobsRes.data.jobs));
+                    }
+                } catch (error) {
+                    console.error("Error refreshing job list:", error);
+                }
+                
                 navigate("/admin/jobs");
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to update job");
+            console.error("Error updating job:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const selectedCompany = companies.find(company => company._id === input.companyId);
+    const selectedCompany = companies?.find(company => company?._id === input.companyId);
     
     if (initialLoading) {
         return (
@@ -237,7 +273,7 @@ const JobEdit = () => {
                                         Company <span className="text-red-400">*</span>
                                     </Label>
                                     
-                                    {companies.length > 0 ? (
+                                    {companies && companies.length > 0 ? (
                                         <Select 
                                             value={input.companyId}
                                             onValueChange={(value) => selectChangeHandler('companyId', value)}

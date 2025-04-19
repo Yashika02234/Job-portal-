@@ -10,7 +10,8 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Briefcase, MapPin, CalendarClock, DollarSign, Users, Clock, Award,
-  Building, Share2, Bookmark, ChevronLeft, Send, CheckCircle, AlertTriangle
+  Building, Share2, Bookmark, ChevronLeft, Send, CheckCircle, AlertTriangle,
+  XCircle, Info
 } from 'lucide-react';
 import Navbar from './shared/Navbar';
 
@@ -28,6 +29,10 @@ const JobDescription = () => {
   const navigate = useNavigate();
   const jobId = params.id;
   const dispatch = useDispatch();
+
+  const isCompanyActive = singleJob?.company?.isActive !== false;
+  const isJobActive = singleJob?.status === 'active' || !singleJob?.status;
+  const canApply = isCompanyActive && isJobActive;
 
   const scrollToApply = () => {
     if (applyRef.current) {
@@ -234,6 +239,16 @@ const JobDescription = () => {
                     <Building className="w-4 h-4 mr-1.5 text-gray-400" />
                     {singleJob?.company?.name}
                   </span>
+                  {!isCompanyActive && (
+                    <Badge className="bg-amber-500/20 border border-amber-500/30 text-amber-300 flex items-center gap-1">
+                      <Info className="h-3 w-3" /> Company Inactive
+                    </Badge>
+                  )}
+                  {!isJobActive && (
+                    <Badge className="bg-red-500/20 border border-red-500/30 text-red-300 flex items-center gap-1">
+                      <XCircle className="h-3 w-3" /> Closed
+                    </Badge>
+                  )}
                   <span className="flex items-center">
                     <MapPin className="w-4 h-4 mr-1.5 text-gray-400" />
                     {singleJob?.location || 'India'}
@@ -253,33 +268,55 @@ const JobDescription = () => {
                 whileTap={{ scale: 0.97 }}
                 className="md:self-start"
               >
-                <Button
-                  ref={applyRef}
-                  onClick={isApplied ? null : applyJobHandler}
-                  disabled={isApplied || loading}
-                  className={`rounded-full px-6 py-5 text-base ${
-                    isApplied
-                      ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg'
-                  }`}
-                >
-                  {loading ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    >
-                      <Clock className="w-5 h-5" />
-                    </motion.div>
-                  ) : isApplied ? (
-                    <span className="flex items-center">
-                      <CheckCircle className="w-5 h-5 mr-2" /> Already Applied
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      <Send className="w-5 h-5 mr-2" /> Apply Now
-                    </span>
-                  )}
-                </Button>
+                {canApply ? (
+                  <Button
+                    ref={applyRef}
+                    onClick={applyJobHandler}
+                    className={`rounded-full px-6 py-5 text-base ${
+                      isApplied
+                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg'
+                    }`}
+                    disabled={isApplied || loading}
+                  >
+                    {loading ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Clock className="w-5 h-5" />
+                      </motion.div>
+                    ) : isApplied ? (
+                      <span className="flex items-center">
+                        <CheckCircle className="w-5 h-5 mr-2" /> Already Applied
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <Send className="w-5 h-5 mr-2" /> Apply Now
+                      </span>
+                    )}
+                  </Button>
+                ) : (
+                  <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-white mb-4">
+                    <div className="flex items-start">
+                      <AlertTriangle className="h-5 w-5 text-red-400 mr-2 mt-0.5" />
+                      <div>
+                        <h3 className="font-medium">Applications Closed</h3>
+                        <p className="text-sm text-gray-300 mt-1">
+                          {!isCompanyActive ? 
+                            "This company is currently inactive and not accepting applications. We apologize for any inconvenience." : 
+                            "This job position is no longer accepting applications. The position may have been filled or the listing has expired."}
+                        </p>
+                        {!isCompanyActive && (
+                          <p className="text-xs text-amber-300 mt-2 flex items-start">
+                            <Info className="h-4 w-4 mr-1 shrink-0" />
+                            <span>When a company is inactive, none of its job listings can accept applications.</span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             </div>
             
@@ -401,33 +438,55 @@ const JobDescription = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Button
-                    onClick={isApplied ? null : applyJobHandler}
-                    disabled={isApplied || loading}
-                    className={`w-full py-6 rounded-lg text-lg font-medium ${
-                      isApplied
-                        ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg'
-                    }`}
-                  >
-                    {loading ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        className="mx-auto"
-                      >
-                        <Clock className="w-6 h-6" />
-                      </motion.div>
-                    ) : isApplied ? (
-                      <span className="flex items-center justify-center">
-                        <CheckCircle className="w-6 h-6 mr-2" /> Application Submitted
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-center">
-                        <Send className="w-6 h-6 mr-2" /> Submit Application
-                      </span>
-                    )}
-                  </Button>
+                  {canApply ? (
+                    <Button
+                      onClick={applyJobHandler}
+                      className={`w-full py-6 rounded-lg text-lg font-medium ${
+                        isApplied
+                          ? 'bg-gray-700 text-gray-300 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg'
+                      }`}
+                      disabled={isApplied || loading}
+                    >
+                      {loading ? (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="mx-auto"
+                        >
+                          <Clock className="w-6 h-6" />
+                        </motion.div>
+                      ) : isApplied ? (
+                        <span className="flex items-center justify-center">
+                          <CheckCircle className="w-6 h-6 mr-2" /> Application Submitted
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          <Send className="w-6 h-6 mr-2" /> Submit Application
+                        </span>
+                      )}
+                    </Button>
+                  ) : (
+                    <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 text-white mb-4">
+                      <div className="flex items-start">
+                        <AlertTriangle className="h-5 w-5 text-red-400 mr-2 mt-0.5" />
+                        <div>
+                          <h3 className="font-medium">Applications Closed</h3>
+                          <p className="text-sm text-gray-300 mt-1">
+                            {!isCompanyActive ? 
+                              "This company is currently inactive and not accepting applications. We apologize for any inconvenience." : 
+                              "This job position is no longer accepting applications. The position may have been filled or the listing has expired."}
+                          </p>
+                          {!isCompanyActive && (
+                            <p className="text-xs text-amber-300 mt-2 flex items-start">
+                              <Info className="h-4 w-4 mr-1 shrink-0" />
+                              <span>When a company is inactive, none of its job listings can accept applications.</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
                 
                 {!user && (

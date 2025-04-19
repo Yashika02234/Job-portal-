@@ -98,3 +98,56 @@ export const updateCompany = async (req, res) => {
         console.log(error);
     }
 }
+
+// Toggle company active status
+export const toggleCompanyStatus = async (req, res) => {
+    try {
+        const { isActive } = req.body;
+        
+        if (isActive === undefined) {
+            return res.status(400).json({
+                message: "isActive field is required",
+                success: false
+            });
+        }
+
+        const company = await Company.findByIdAndUpdate(
+            req.params.id,
+            { isActive: isActive },
+            { new: true }
+        );
+
+        if (!company) {
+            return res.status(404).json({
+                message: "Company not found",
+                success: false
+            });
+        }
+
+        // If company is set to inactive, update all its jobs to rejected status
+        if (isActive === false) {
+            // Import Job model if not already imported at the top of the file
+            const { Job } = await import("../models/job.model.js");
+            
+            // Find all active jobs for this company and update their status to 'rejected'
+            const jobsUpdated = await Job.updateMany(
+                { company: company._id, status: "active" },
+                { status: "rejected" }
+            );
+            
+            console.log(`Updated ${jobsUpdated.modifiedCount} jobs to rejected status`);
+        }
+
+        return res.status(200).json({
+            message: `Company status updated to ${isActive ? 'active' : 'inactive'}${isActive === false ? ' and all active jobs were rejected' : ''}`,
+            company,
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while updating company status",
+            success: false
+        });
+    }
+}

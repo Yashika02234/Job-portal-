@@ -9,6 +9,8 @@ import PostJob from './components/admin/PostJob'
 import JobEdit from './components/admin/JobEdit'
 import ProtectedRoute from './components/admin/ProtectedRoute'
 import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
+import ManageCompanies from './components/admin/ManageCompanies'
+import EditCompany from './components/admin/EditCompany'
 import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
 import AboutUs from './components/AboutUs'
@@ -64,6 +66,14 @@ const appRouter = createBrowserRouter([
   {
     path:"/admin/companies/create",
     element: <ProtectedRoute><CompanyCreate/></ProtectedRoute> 
+  },
+  {
+    path:"/admin/companies/manage",
+    element: <ProtectedRoute><ManageCompanies/></ProtectedRoute> 
+  },
+  {
+    path:"/admin/companies/edit/:id",
+    element: <ProtectedRoute><EditCompany/></ProtectedRoute> 
   },
   {
     path:"/admin/companies/:id",

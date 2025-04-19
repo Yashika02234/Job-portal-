@@ -19,6 +19,10 @@ const companySchema = new mongoose.Schema(
     logo: {
       type: String, // URL of company logo
     },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId, // to build a connection between two Collections
       ref: "User",

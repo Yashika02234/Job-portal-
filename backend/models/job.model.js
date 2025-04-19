@@ -29,12 +29,13 @@ const jobSchema = new mongoose.Schema(
       required: true,
     },
     experienceLevel: {
-      type: Number,
+      type: String,
       required: true,
     },
-    salary: {
-      type: Number,
-      required: true,
+    status: {
+      type: String,
+      enum: ["active", "closed", "draft", "pending"],
+      default: "active",
     },
     position: {
       type: Number,

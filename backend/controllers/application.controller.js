@@ -46,6 +46,22 @@ export const applyJob = async (req, res) => {
       });
     }
 
+    // Check if the company is active
+    if (job.company.isActive === false) {
+      return res.status(403).json({
+        message: "Cannot apply to a job from an inactive company",
+        success: false,
+      });
+    }
+
+    // Check if the job is active
+    if (job.status === 'rejected' || job.status === 'closed') {
+      return res.status(403).json({
+        message: "This job is no longer accepting applications",
+        success: false,
+      });
+    }
+
     const recruiter = job.company.userId; // Recruiter is the user who owns the company
 
     //create a new application
@@ -74,6 +90,10 @@ export const applyJob = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "An error occurred while applying for the job",
+      success: false,
+    });
   }
 };
 

@@ -95,6 +95,20 @@ const PostJob = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        
+        // Input validation
+        if (!input.title || !input.companyId) {
+            toast.error("Please fill all required fields");
+            return;
+        }
+        
+        // Check if selected company is active
+        const selectedCompany = companies.find(company => company._id === input.companyId);
+        if (selectedCompany && selectedCompany.isActive === false) {
+            toast.error("Cannot post job for inactive company. Please activate the company first.");
+            return;
+        }
+        
         try {
             setLoading(true);
             const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
@@ -271,17 +285,16 @@ const PostJob = () => {
                                                     <SelectValue placeholder="Select a Company" />
                                                 </SelectTrigger>
                                                 <SelectContent className="bg-slate-800 border-slate-700 text-white">
-                                                    <SelectGroup>
-                                                        {companies.map((company) => (
-                                                            <SelectItem 
-                                                                key={company._id} 
-                                                                value={company.name.toLowerCase()}
-                                                                className="focus:bg-purple-500/20 focus:text-white cursor-pointer"
-                                                            >
-                                                                {company.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectGroup>
+                                                    {companies.map((company) => (
+                                                        <SelectItem 
+                                                            key={company._id} 
+                                                            value={company.name.toLowerCase()}
+                                                            disabled={company.isActive === false}
+                                                            className={company.isActive === false ? "opacity-50 cursor-not-allowed" : ""}
+                                                        >
+                                                            {company.name} {company.isActive === false && "(Inactive)"}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
                                         ) : (
