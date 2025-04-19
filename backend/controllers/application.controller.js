@@ -129,27 +129,53 @@ export const getAppliedJobs = async (req, res) => {
 export const getApplicants = async (req, res) => {
   try {
     const jobId = req.params.id;
+    console.log(`Fetching applicants for job: ${jobId}`);
+    
     const job = await Job.findById(jobId).populate({
       path: "applications",
       options: { sort: { createdAt: -1 } },
       populate: {
         path: "applicant",
+        select: "fullname email phoneNumber profile",
+        model: "User"
       },
     });
+    
     if (!job) {
       return res.status(404).json({
         message: "Job not found.",
         success: false,
       });
     }
+    
+    // Add user details to each application for easy frontend access
+    const applicationsWithUser = job.applications.map(app => {
+      const appObj = app.toObject();
+      if (app.applicant) {
+        appObj.user = app.applicant;
+      }
+      return appObj;
+    });
+    
+    // Create a modified job object with the enhanced applications
+    const jobData = job.toObject();
+    jobData.applications = applicationsWithUser;
+    
+    console.log(`Found ${jobData.applications.length} applicants`);
+    
     return res.status(200).json({
-      job,
-      succees: true,
+      job: jobData,
+      success: true
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error in getApplicants:", error);
+    return res.status(500).json({
+      message: "An error occurred while fetching applicants",
+      success: false
+    });
   }
 };
+
 export const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -195,9 +221,9 @@ export const updateStatus = async (req, res) => {
       let emailSubject = '';
       let emailBody = '';
       
-      if (status.toLowerCase() === 'shortlisted') {
-        emailSubject = `You've been shortlisted for ${job.title} at ${job.company.name}`;
-        emailBody = `Dear ${applicant.fullname},\n\nCongratulations! You have been shortlisted for the position of ${job.title} at ${job.company.name}.\n\nPlease check your account dashboard for more information.\n\nBest regards,\n${job.company.name} Recruitment Team`;
+      if (status.toLowerCase() === 'accepted') {
+        emailSubject = `You've been accepted for ${job.title} at ${job.company.name}`;
+        emailBody = `Dear ${applicant.fullname},\n\nCongratulations! You have been accepted for the position of ${job.title} at ${job.company.name}.\n\nPlease check your account dashboard for more information.\n\nBest regards,\n${job.company.name} Recruitment Team`;
       } else if (status.toLowerCase() === 'rejected') {
         emailSubject = `Update on your application for ${job.title} at ${job.company.name}`;
         emailBody = `Dear ${applicant.fullname},\n\nThank you for your interest in the ${job.title} position at ${job.company.name}.\n\nAfter careful consideration, we have decided to pursue other candidates whose qualifications more closely match our current needs.\n\nWe appreciate your interest in ${job.company.name} and wish you the best in your job search.\n\nBest regards,\n${job.company.name} Recruitment Team`;
@@ -277,8 +303,8 @@ export const sendInterviewEmail = async (req, res) => {
     try {
       await sendStatusUpdateEmail(applicant.email, emailSubject, message);
       
-      // Update application status to shortlisted
-      application.status = 'shortlisted';
+      // Update application status to accepted
+      application.status = 'accepted';
       await application.save();
       
       return res.status(200).json({
@@ -320,4 +346,48 @@ const sendStatusUpdateEmail = async (email, subject, message) => {
   
   // For now, just return success
   return true;
+};
+
+// Fetch all applications for a specific user with status
+export const getUserApplications = async (req, res) => {
+  try {
+    const userId = req.id;
+    
+    if (!userId) {
+      return res.status(401).json({
+        message: "User not authenticated",
+        success: false
+      });
+    }
+    
+    const applications = await Application.find({ applicant: userId })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "job",
+        select: "title company location jobType salary",
+        populate: {
+          path: "company",
+          select: "name logo"
+        }
+      });
+    
+    if (!applications || applications.length === 0) {
+      return res.status(200).json({
+        message: "No applications found",
+        applications: [],
+        success: true
+      });
+    }
+    
+    return res.status(200).json({
+      applications,
+      success: true
+    });
+  } catch (error) {
+    console.error("Error fetching user applications:", error);
+    return res.status(500).json({
+      message: "An error occurred while fetching applications",
+      success: false
+    });
+  }
 };

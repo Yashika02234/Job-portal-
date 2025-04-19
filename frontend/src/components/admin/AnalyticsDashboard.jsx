@@ -5,7 +5,7 @@ import {
   BarChart3, LineChart, PieChart, TrendingUp, Users, 
   Clock, Calendar, BarChart, Award, Briefcase, MapPin,
   Filter, Download, RefreshCw, Briefcase as BriefcaseIcon,
-  Plus, Gauge, GraduationCap, Eye, ChevronDown
+  Plus, Gauge, GraduationCap, Eye, ChevronDown, Edit
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -490,61 +490,21 @@ const AnalyticsDashboard = () => {
                   </div>
                 </Link>
                 
-                {/* View Applicants - with dropdown of recent jobs */}
-                <div className="relative group">
+                {/* Edit Company */}
+                <Link to="/admin/companies/manage">
                   <div className="group bg-slate-800/50 hover:bg-slate-800 rounded-xl p-4 border border-slate-700/50 transition-all cursor-pointer">
                     <div className="flex items-start gap-4">
-                      <div className="bg-green-900/30 p-3 rounded-lg border border-green-600/30">
-                        <Users className="h-5 w-5 text-green-400" />
+                      <div className="bg-emerald-900/30 p-3 rounded-lg border border-emerald-600/30">
+                        <Edit className="h-5 w-5 text-emerald-400" />
                       </div>
                       
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center">
-                          <h3 className="text-white font-medium group-hover:text-green-400 transition-colors">View Applicants</h3>
-                          <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-green-400 transition-colors" />
-                        </div>
-                        <p className="text-gray-400 text-sm mt-1">Review applications for your job postings</p>
+                      <div>
+                        <h3 className="text-white font-medium group-hover:text-emerald-400 transition-colors">Edit Company</h3>
+                        <p className="text-gray-400 text-sm mt-1">Update details of your existing companies</p>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Dropdown content */}
-                  <div className="hidden group-hover:block absolute left-0 right-0 mt-2 bg-slate-800 rounded-xl border border-slate-700 shadow-lg z-10 overflow-hidden">
-                    {allAdminJobs && allAdminJobs.length > 0 ? (
-                      <>
-                        {allAdminJobs.slice(0, 5).map((job) => (
-                          <Link key={job._id} to={`/admin/jobs/${job._id}/applicants`}>
-                            <div className="p-3 hover:bg-slate-700 border-b border-slate-700 last:border-0">
-                              <div className="flex justify-between items-center">
-                                <p className="text-white text-sm font-medium truncate">{job.title}</p>
-                                <div className="bg-green-900/30 px-2 py-0.5 rounded text-xs text-green-400 font-medium">
-                                  {job.applicants?.length || 0} applicants
-                                </div>
-                              </div>
-                              <p className="text-gray-400 text-xs mt-1 truncate">{job.company?.name}</p>
-                            </div>
-                          </Link>
-                        ))}
-                        
-                        <Link to="/admin/jobs">
-                          <div className="p-3 bg-slate-900 hover:bg-slate-700 text-center text-sm text-purple-400 font-medium">
-                            View All Jobs
-                          </div>
-                        </Link>
-                      </>
-                    ) : (
-                      <div className="p-4 text-center">
-                        <p className="text-gray-400 text-sm">No jobs posted yet</p>
-                        <Link to="/admin/jobs/create">
-                          <Button size="sm" variant="outline" className="mt-2 border-purple-500/30 text-purple-400 hover:bg-purple-900/20">
-                            <Plus className="h-3 w-3 mr-1" />
-                            Post a Job
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                </Link>
                 
                 {/* Analytics Dashboard (disabled since we're already on it) */}
                 <div className="bg-slate-800/50 opacity-75 rounded-xl p-4 border border-slate-700/50 cursor-not-allowed">

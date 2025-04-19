@@ -43,7 +43,7 @@ const JobDescription = () => {
   const applyJobHandler = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${jobId}`, { withCredentials: true });
+      const res = await axios.post(`${APPLICATION_API_END_POINT}/${jobId}/apply`, {}, { withCredentials: true });
 
       if (res.data.success) {
         setIsApplied(true); // Update the local state
@@ -54,7 +54,7 @@ const JobDescription = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to apply for job");
     } finally {
       setLoading(false);
     }

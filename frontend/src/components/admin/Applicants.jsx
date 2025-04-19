@@ -47,9 +47,11 @@ const Applicants = () => {
             try {
                 setLoading(true);
                 const res = await axios.get(`${APPLICATION_API_END_POINT}/${params.id}/applicants`, { withCredentials: true });
+                console.log("Fetched applicants:", res.data);
                 dispatch(setAllApplicants(res.data.job));
             } catch (error) {
-                console.log(error);
+                console.log("Error fetching applicants:", error);
+                toast.error("Failed to fetch applicants");
             } finally {
                 setLoading(false);
             }
@@ -70,7 +72,7 @@ const Applicants = () => {
     const stats = {
         total: applicants?.applications?.length || 0,
         pending: applicants?.applications?.filter(app => app.status === 'pending').length || 0,
-        shortlisted: applicants?.applications?.filter(app => app.status === 'shortlisted').length || 0,
+        accepted: applicants?.applications?.filter(app => app.status === 'accepted').length || 0,
         rejected: applicants?.applications?.filter(app => app.status === 'rejected').length || 0,
     };
 
@@ -239,8 +241,8 @@ const Applicants = () => {
                     />
                     
                     <StatCard 
-                        title="Shortlisted" 
-                        value={stats.shortlisted} 
+                        title="Accepted" 
+                        value={stats.accepted} 
                         icon={<CheckCircle className="h-4 w-4 text-green-400" />}
                         color="from-green-500/20 to-emerald-500/20 border-green-500/30"
                     />
@@ -282,6 +284,7 @@ const Applicants = () => {
                                 <Select
                                     value={statusFilter}
                                     onValueChange={setStatusFilter}
+                                    defaultValue="all"
                                 >
                                     <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white">
                                         <SelectValue placeholder="Filter by status" />
@@ -289,7 +292,7 @@ const Applicants = () => {
                                     <SelectContent className="bg-slate-900 border-slate-700 text-white">
                                         <SelectItem value="all" className="text-white focus:bg-slate-700 focus:text-white">All Statuses</SelectItem>
                                         <SelectItem value="pending" className="text-white focus:bg-slate-700 focus:text-white">Pending</SelectItem>
-                                        <SelectItem value="shortlisted" className="text-white focus:bg-slate-700 focus:text-white">Shortlisted</SelectItem>
+                                        <SelectItem value="accepted" className="text-white focus:bg-slate-700 focus:text-white">Accepted</SelectItem>
                                         <SelectItem value="rejected" className="text-white focus:bg-slate-700 focus:text-white">Rejected</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -332,7 +335,7 @@ const Applicants = () => {
                             }}
                         >
                             <CheckCircle className="mr-2 h-4 w-4 text-green-400" />
-                            Bulk Shortlist
+                            Bulk Accept
                         </Button>
                         <Button 
                             variant="outline" 

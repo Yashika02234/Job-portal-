@@ -129,18 +129,33 @@ const JobEdit = () => {
                             companyId: res.data.job.company?._id || "",
                             status: jobStatus
                         });
+                    } else {
+                        toast.error("Job not found");
+                        setTimeout(() => {
+                            navigate('/admin/jobs');
+                        }, 2000);
                     }
                 }
             } catch (error) {
                 console.error("Error fetching job:", error);
                 toast.error("Failed to load job details");
+                // Redirect back to jobs page after error
+                setTimeout(() => {
+                    navigate('/admin/jobs');
+                }, 2000);
             } finally {
                 setInitialLoading(false);
             }
         };
         
-        fetchJob();
-    }, [id, allAdminJobs]);
+        if (id) {
+            fetchJob();
+        } else {
+            setInitialLoading(false);
+            toast.error("No job ID provided");
+            navigate('/admin/jobs');
+        }
+    }, [id, allAdminJobs, navigate]);
     
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
@@ -162,14 +177,31 @@ const JobEdit = () => {
             return;
         }
         
+        // Show loading toast
+        const loadingToast = toast.loading("Updating job...");
+        
         try {
             setLoading(true);
-            const res = await axios.put(`${JOB_API_END_POINT}/update/${id}`, input, {
+            
+            // Format the data for submission
+            const jobData = {
+                ...input,
+                // Ensure requirements is handled properly
+                requirements: Array.isArray(input.requirements) 
+                    ? input.requirements.join(',') 
+                    : input.requirements
+            };
+            
+            const res = await axios.put(`${JOB_API_END_POINT}/update/${id}`, jobData, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 withCredentials: true
             });
+            
+            // Dismiss loading toast
+            toast.dismiss(loadingToast);
+            
             if(res.data.success) {
                 toast.success(res.data.message || "Job updated successfully");
                 
@@ -184,10 +216,22 @@ const JobEdit = () => {
                     console.error("Error refreshing job list:", error);
                 }
                 
-                navigate("/admin/jobs");
+                // Navigate after a brief delay to allow toast to be seen
+                setTimeout(() => {
+                    navigate("/admin/jobs");
+                }, 1000);
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update job");
+            // Dismiss loading toast
+            toast.dismiss(loadingToast);
+            
+            // Show specific error message if available
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("Failed to update job. Please try again.");
+            }
+            
             console.error("Error updating job:", error);
         } finally {
             setLoading(false);

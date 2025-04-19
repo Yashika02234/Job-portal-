@@ -9,20 +9,29 @@ import {
   User, Phone, Sparkles, ChevronRight, Clock, X, Plus
 } from 'lucide-react';
 import { Badge } from './ui/badge';
-import AppliedJobTable from './AppliedJobTable';
 import UpdateProfileDialog from './UpdateProfileDialog';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import axios from 'axios';
+import { USER_API_END_POINT } from '@/utils/constant';
+import { toast } from 'sonner';
+import { setUser } from '@/redux/authSlice';
 
 const Profile = () => {
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('profile');
     const { user } = useSelector(store => store.auth);
     const [scrollY, setScrollY] = useState(0);
+    const dispatch = useDispatch();
+    
+    // Loading states
+    const [loadingExp, setLoadingExp] = useState(false);
+    const [loadingEdu, setLoadingEdu] = useState(false);
+    const [loadingCert, setLoadingCert] = useState(false);
     
     // States for experience editing
     const [isEditingExp, setIsEditingExp] = useState(false);
@@ -79,6 +88,70 @@ const Profile = () => {
     // New certification state
     const [newCert, setNewCert] = useState("");
 
+    // Save to backend functions
+    const saveExperienceToBackend = async () => {
+        try {
+            setLoadingExp(true);
+            const response = await axios.post(
+                `${USER_API_END_POINT}/profile/experience/update`,
+                { experience: workExperience },
+                { withCredentials: true }
+            );
+            
+            if (response.data.success) {
+                dispatch(setUser(response.data.user));
+                toast.success('Work experience updated successfully');
+            }
+        } catch (error) {
+            console.error('Error updating experience:', error);
+            toast.error(error.response?.data?.message || 'Failed to update experience');
+        } finally {
+            setLoadingExp(false);
+        }
+    };
+    
+    const saveEducationToBackend = async () => {
+        try {
+            setLoadingEdu(true);
+            const response = await axios.post(
+                `${USER_API_END_POINT}/profile/education/update`,
+                { education },
+                { withCredentials: true }
+            );
+            
+            if (response.data.success) {
+                dispatch(setUser(response.data.user));
+                toast.success('Education updated successfully');
+            }
+        } catch (error) {
+            console.error('Error updating education:', error);
+            toast.error(error.response?.data?.message || 'Failed to update education');
+        } finally {
+            setLoadingEdu(false);
+        }
+    };
+    
+    const saveCertificationsToBackend = async () => {
+        try {
+            setLoadingCert(true);
+            const response = await axios.post(
+                `${USER_API_END_POINT}/profile/certifications/update`,
+                { certifications },
+                { withCredentials: true }
+            );
+            
+            if (response.data.success) {
+                dispatch(setUser(response.data.user));
+                toast.success('Certifications updated successfully');
+            }
+        } catch (error) {
+            console.error('Error updating certifications:', error);
+            toast.error(error.response?.data?.message || 'Failed to update certifications');
+        } finally {
+            setLoadingCert(false);
+        }
+    };
+
     // Scroll effect for parallax
     useEffect(() => {
         const handleScroll = () => {
@@ -108,37 +181,46 @@ const Profile = () => {
     // Add new experience
     const addExperience = () => {
         if (newExp.company && newExp.position) {
-            setWorkExperience([...workExperience, newExp]);
+            const updatedExperience = [...workExperience, newExp];
+            setWorkExperience(updatedExperience);
             setNewExp({
                 company: "",
                 position: "",
                 duration: "",
                 description: ""
             });
-            // TODO: Save to backend
+            
+            // Save to backend
+            saveExperienceToBackend();
         }
     };
     
     // Add new education
     const addEducation = () => {
         if (newEdu.institution && newEdu.degree) {
-            setEducation([...education, newEdu]);
+            const updatedEducation = [...education, newEdu];
+            setEducation(updatedEducation);
             setNewEdu({
                 institution: "",
                 degree: "",
                 duration: "",
                 description: ""
             });
-            // TODO: Save to backend
+            
+            // Save to backend
+            saveEducationToBackend();
         }
     };
     
     // Add new certification
     const addCertification = () => {
         if (newCert.trim()) {
-            setCertifications([...certifications, newCert]);
+            const updatedCertifications = [...certifications, newCert];
+            setCertifications(updatedCertifications);
             setNewCert("");
-            // TODO: Save to backend
+            
+            // Save to backend
+            saveCertificationsToBackend();
         }
     };
     
@@ -147,7 +229,9 @@ const Profile = () => {
         const updatedExp = [...workExperience];
         updatedExp.splice(index, 1);
         setWorkExperience(updatedExp);
-        // TODO: Save to backend
+        
+        // Save to backend
+        saveExperienceToBackend();
     };
     
     // Remove education
@@ -155,7 +239,9 @@ const Profile = () => {
         const updatedEdu = [...education];
         updatedEdu.splice(index, 1);
         setEducation(updatedEdu);
-        // TODO: Save to backend
+        
+        // Save to backend
+        saveEducationToBackend();
     };
     
     // Remove certification
@@ -163,7 +249,34 @@ const Profile = () => {
         const updatedCert = [...certifications];
         updatedCert.splice(index, 1);
         setCertifications(updatedCert);
-        // TODO: Save to backend
+        
+        // Save to backend
+        saveCertificationsToBackend();
+    };
+
+    // Handle editing mode toggling
+    const toggleEditingExp = () => {
+        if (isEditingExp) {
+            // If turning off editing mode, save the changes
+            saveExperienceToBackend();
+        }
+        setIsEditingExp(!isEditingExp);
+    };
+    
+    const toggleEditingEdu = () => {
+        if (isEditingEdu) {
+            // If turning off editing mode, save the changes
+            saveEducationToBackend();
+        }
+        setIsEditingEdu(!isEditingEdu);
+    };
+    
+    const toggleEditingCert = () => {
+        if (isEditingCert) {
+            // If turning off editing mode, save the changes
+            saveCertificationsToBackend();
+        }
+        setIsEditingCert(!isEditingCert);
     };
 
     const fadeInUpVariants = {
@@ -341,10 +454,16 @@ const Profile = () => {
                                 <Button 
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setIsEditingExp(!isEditingExp)}
+                                    onClick={toggleEditingExp}
                                     className="border-purple-500/30 text-white hover:bg-purple-500/20"
+                                    disabled={loadingExp}
                                 >
-                                    {isEditingExp ? "Done" : "Edit"}
+                                    {loadingExp ? (
+                                        <>
+                                            <span className="animate-spin mr-2">⟳</span>
+                                            Saving...
+                                        </>
+                                    ) : isEditingExp ? "Done" : "Edit"}
                                 </Button>
                             </div>
                             
@@ -446,9 +565,19 @@ const Profile = () => {
                                         type="button"
                                         onClick={addExperience}
                                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                                        disabled={loadingExp}
                                     >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Experience
+                                        {loadingExp ? (
+                                            <>
+                                                <span className="animate-spin mr-2">⟳</span>
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Add Experience
+                                            </>
+                                        )}
                                     </Button>
                                 </motion.div>
                             )}
@@ -467,10 +596,16 @@ const Profile = () => {
                                 <Button 
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setIsEditingEdu(!isEditingEdu)}
+                                    onClick={toggleEditingEdu}
                                     className="border-purple-500/30 text-white hover:bg-purple-500/20"
+                                    disabled={loadingEdu}
                                 >
-                                    {isEditingEdu ? "Done" : "Edit"}
+                                    {loadingEdu ? (
+                                        <>
+                                            <span className="animate-spin mr-2">⟳</span>
+                                            Saving...
+                                        </>
+                                    ) : isEditingEdu ? "Done" : "Edit"}
                                 </Button>
                             </div>
                             
@@ -547,24 +682,24 @@ const Profile = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <Label htmlFor="eduduration" className="text-white mb-2 block text-sm">Duration</Label>
+                                        <Label htmlFor="eduDuration" className="text-white mb-2 block text-sm">Duration</Label>
                                         <Input
-                                            id="eduduration"
+                                            id="eduDuration"
                                             name="duration"
                                             value={newEdu.duration}
                                             onChange={handleEduChange}
-                                            placeholder="e.g. 2013 - 2017"
+                                            placeholder="e.g. 2015 - 2019"
                                             className="bg-slate-900/50 border-slate-700 text-white"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="edudescription" className="text-white mb-2 block text-sm">Description</Label>
+                                        <Label htmlFor="eduDescription" className="text-white mb-2 block text-sm">Description</Label>
                                         <Textarea
-                                            id="edudescription"
+                                            id="eduDescription"
                                             name="description"
                                             value={newEdu.description}
                                             onChange={handleEduChange}
-                                            placeholder="Describe your studies, achievements, etc."
+                                            placeholder="Describe your studies and achievements"
                                             className="bg-slate-900/50 border-slate-700 text-white min-h-[100px]"
                                         />
                                     </div>
@@ -572,113 +707,23 @@ const Profile = () => {
                                         type="button"
                                         onClick={addEducation}
                                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                                        disabled={loadingEdu}
                                     >
-                                        <Plus className="mr-2 h-4 w-4" />
-                                        Add Education
+                                        {loadingEdu ? (
+                                            <>
+                                                <span className="animate-spin mr-2">⟳</span>
+                                                Saving...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Add Education
+                                            </>
+                                        )}
                                     </Button>
                                 </motion.div>
                             )}
                         </motion.div>
-
-                        <motion.div 
-                            variants={fadeInUpVariants}
-                            custom={2}
-                            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg mt-8"
-                        >
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-semibold flex items-center text-white">
-                                    <Award className="mr-2 h-5 w-5 text-purple-400" />
-                                    Certifications
-                                </h3>
-                                <Button 
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setIsEditingCert(!isEditingCert)}
-                                    className="border-purple-500/30 text-white hover:bg-purple-500/20"
-                                >
-                                    {isEditingCert ? "Done" : "Edit"}
-                                </Button>
-                            </div>
-                            
-                            {certifications.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                    {certifications.map((cert, index) => (
-                                        <motion.div 
-                                            key={index}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1 + 0.3 }}
-                                            className="bg-slate-800/50 p-4 rounded-lg border border-purple-500/20 flex items-center justify-between group"
-                                        >
-                                            <div className="flex items-center">
-                                                <Award className="h-5 w-5 text-purple-400 mr-2 flex-shrink-0" />
-                                                <span className="text-gray-300">{cert}</span>
-                                            </div>
-                                            
-                                            {isEditingCert && (
-                                                <motion.button
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                                    onClick={() => removeCertification(index)}
-                                                >
-                                                    <X className="h-5 w-5" />
-                                                </motion.button>
-                                            )}
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center p-6 border border-dashed border-gray-500 rounded-lg text-gray-400 mb-6">
-                                    <p>No certifications added yet</p>
-                                </div>
-                            )}
-                            
-                            {isEditingCert && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="bg-slate-800/50 rounded-lg p-4 border border-purple-500/20 space-y-4"
-                                >
-                                    <h4 className="text-white font-medium">Add New Certification</h4>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            id="certification"
-                                            value={newCert}
-                                            onChange={(e) => setNewCert(e.target.value)}
-                                            placeholder="e.g. AWS Certified Developer"
-                                            className="bg-slate-900/50 border-slate-700 text-white"
-                                        />
-                                        <Button 
-                                            type="button"
-                                            onClick={addCertification}
-                                            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white whitespace-nowrap"
-                                        >
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            Add
-                                        </Button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                );
-            case 'applications':
-                return (
-                    <motion.div 
-                        key="applications"
-                        variants={tabVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
-                    >
-                        <h3 className="text-xl font-semibold mb-6 flex items-center text-white">
-                            <Briefcase className="mr-2 h-5 w-5 text-purple-400" />
-                            Job Applications
-                        </h3>
-                        <AppliedJobTable />
                     </motion.div>
                 );
             default:
@@ -831,13 +876,6 @@ const Profile = () => {
                             icon={<Building className="h-4 w-4 mr-2" />}
                         >
                             Experience
-                        </TabButton>
-                        <TabButton 
-                            active={activeTab === 'applications'} 
-                            onClick={() => setActiveTab('applications')}
-                            icon={<Briefcase className="h-4 w-4 mr-2" />}
-                        >
-                            Applications
                         </TabButton>
                     </div>
                 </motion.div>

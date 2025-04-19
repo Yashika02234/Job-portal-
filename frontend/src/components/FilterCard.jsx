@@ -3,25 +3,27 @@ import { Label } from './ui/label'
 import { useDispatch } from 'react-redux'
 import { setSearchedQuery } from '@/redux/jobSlice'
 import { motion } from 'framer-motion'
-import { Check, X, Filter } from 'lucide-react'
+import { Check, X, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 
 const filterData = [
     {
         filterType: "Location",
-        array: ["Delhi NCR", "Bangalore", "Hyderabad", "Pune", "Mumbai"]
+        array: ["Delhi NCR", "Bangalore", "Hyderabad", "Pune", "Mumbai","Chennai","Kolkata","Jaipur","Ahmedabad","Surat","Indore","Lucknow",
+            "Kanpur","Bhopal","Gurgaon","Noida","Faridhabad","Ghaziabad","Nashik","Pimpri-Chinchwad","Indore","Lucknow","Kanpur","Bhopal","Gurgaon","Noida","Faridhabad","Ghaziabad","Nashik","Pimpri-Chinchwad","Ahemdabad"]
     },
     {
         filterType: "Industry",
-        array: ["Frontend Developer", "Backend Developer", "FullStack Developer"]
+        array: ["Frontend Developer", "Backend Developer", "FullStack Developer","DevOps Engineer","Cloud Engineer","Cyber Security Engineer","Data Engineer","Data Analyst","Data Scientist","AI/ML Engineer","Blockchain Developer","UI/UX Designer","Product Manager","Project Manager","Sales Manager","Marketing Manager","HR Manager","Finance Manager","Operations Manager","Customer Support","Content Writer","Graphic Designer","Video Editor","SEO Specialist","Social Media Manager","Event Planner","Content Writer","Graphic Designer","Video Editor","SEO Specialist","Social Media Manager","Event Planner"]
     },
     {
         filterType: "Salary",
-        array: ["0-40k", "42-1lakh", "1lakh to 5lakh"]
+        array: ["0-40k", "42-1lakh", "1lakh to 5lakh","5lakh to 10lakh","10lakh to 20lakh","20lakh to 50lakh","50lakh to 1cr"]
     },
 ]
 
 const FilterCard = () => {
     const [selectedValues, setSelectedValues] = useState([]);
+    const [expandedFilters, setExpandedFilters] = useState({});
     const dispatch = useDispatch();
     
     const changeHandler = (value) => {
@@ -46,6 +48,21 @@ const FilterCard = () => {
     
     const clearAllFilters = () => {
         setSelectedValues([]);
+    }
+    
+    const toggleFilterExpand = (filterType) => {
+        setExpandedFilters(prev => ({
+            ...prev,
+            [filterType]: !prev[filterType]
+        }));
+    }
+    
+    // Function to determine which array items to show
+    const getVisibleItems = (filterType, array) => {
+        if (expandedFilters[filterType]) {
+            return array;
+        }
+        return array.slice(0, 3);
     }
     
     return (
@@ -98,7 +115,7 @@ const FilterCard = () => {
                 <div key={`filter-${index}`} className="mb-5">
                     <h2 className='font-bold text-gray-200 mb-2'>{data.filterType}</h2>
                     <div className="space-y-1.5">
-                        {data.array.map((item, idx) => (
+                        {getVisibleItems(data.filterType, data.array).map((item, idx) => (
                             <motion.div
                                 key={`filter-item-${index}-${idx}`}
                                 whileHover={{ scale: 1.01 }}
@@ -122,6 +139,21 @@ const FilterCard = () => {
                                 <Label className="cursor-pointer">{item}</Label>
                             </motion.div>
                         ))}
+                        
+                        {data.array.length > 3 && (
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => toggleFilterExpand(data.filterType)}
+                                className="w-full mt-2 py-2 px-3 text-sm font-medium flex items-center justify-center rounded-md bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 transition-colors"
+                            >
+                                {expandedFilters[data.filterType] ? (
+                                    <>Show Less <ChevronUp className="ml-1 w-4 h-4" /></>
+                                ) : (
+                                    <>Show More ({data.array.length - 3}) <ChevronDown className="ml-1 w-4 h-4" /></>
+                                )}
+                            </motion.button>
+                        )}
                     </div>
                 </div>
             ))}

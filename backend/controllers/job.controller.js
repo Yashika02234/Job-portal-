@@ -170,6 +170,7 @@ export const updateJob = async (req, res) => {
       status
     } = req.body;
     
+    // Validate required fields
     if (
       !title ||
       !description ||
@@ -186,7 +187,7 @@ export const updateJob = async (req, res) => {
       });
     }
     
-    // Check if company exists and is active
+    // Check if company exists
     const company = await Company.findById(companyId);
     if (!company) {
       return res.status(404).json({
@@ -195,14 +196,17 @@ export const updateJob = async (req, res) => {
       });
     }
 
-    // Check if company is active
+    // Check if company is active - optionally disable this check if needed
+    /*
     if (company.isActive === false) {
       return res.status(403).json({
         message: "Cannot update job for inactive company.",
         success: false,
       });
     }
+    */
     
+    // Find the job by ID
     const job = await Job.findById(jobId);
     
     if (!job) {
@@ -212,33 +216,88 @@ export const updateJob = async (req, res) => {
       });
     }
     
-    // Update job fields
-    job.title = title;
-    job.description = description;
-    job.requirements = typeof requirements === 'string' ? requirements.split(",") : requirements;
-    job.salary = salary;
-    job.location = location;
-    job.jobType = jobType;
-    job.experienceLevel = experience;
-    job.position = position || 1;
-    job.company = companyId;
-    
-    // Only update status if provided
-    if (status) {
-      job.status = status;
+    // Process requirements field
+    let processedRequirements;
+    if (typeof requirements === 'string') {
+      // If it's a comma-separated string
+      processedRequirements = requirements.split(",").map(item => item.trim());
+    } else if (Array.isArray(requirements)) {
+      // If it's already an array
+      processedRequirements = requirements;
+    } else {
+      // Default to empty array if neither
+      processedRequirements = [];
     }
     
-    await job.save();
+    // Update job fields
+    const updatedJob = await Job.findByIdAndUpdate(
+      jobId,
+      {
+        title,
+        description,
+        requirements: processedRequirements,
+        salary,
+        location,
+        jobType,
+        experienceLevel: experience,
+        position: position || 1,
+        company: companyId,
+        status: status || job.status, // Keep existing status if not provided
+      },
+      { new: true }
+    );
     
     return res.status(200).json({
       message: "Job updated successfully.",
-      job,
+      job: updatedJob,
       success: true,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error updating job:", error);
     return res.status(500).json({
       message: "An error occurred while updating the job.",
+      error: error.message,
+      success: false,
+    });
+  }
+};
+
+// Delete job by admin
+export const deleteJob = async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const userId = req.id;
+
+    // Find the job by ID
+    const job = await Job.findById(jobId);
+    
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found.",
+        success: false,
+      });
+    }
+
+    // Check if the user is authorized to delete this job
+    if (job.created_by.toString() !== userId) {
+      return res.status(403).json({
+        message: "You are not authorized to delete this job.",
+        success: false,
+      });
+    }
+
+    // Delete the job
+    await Job.findByIdAndDelete(jobId);
+    
+    return res.status(200).json({
+      message: "Job deleted successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    return res.status(500).json({
+      message: "An error occurred while deleting the job.",
+      error: error.message,
       success: false,
     });
   }

@@ -9,7 +9,7 @@ import { USER_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoading, setUser } from '@/redux/authSlice'
-import { Loader2, Mail, Lock, User, Building } from 'lucide-react'
+import { Loader2, Mail, Lock, User, Building, Eye, EyeOff } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const Login = () => {
@@ -18,12 +18,17 @@ const Login = () => {
         password: "",
         role: "",
     });
+    const [showPassword, setShowPassword] = useState(false);
     const { loading, user } = useSelector(store => store.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     }
 
     const submitHandler = async (e) => {
@@ -103,14 +108,24 @@ const Login = () => {
                                         <div className="relative">
                                             <Lock className="absolute left-3 top-3 h-4 w-4 text-white/40" />
                                             <Input
-                                                type="password"
+                                                type={showPassword ? "text" : "password"}
                                                 value={input.password}
                                                 name="password"
                                                 onChange={changeEventHandler}
                                                 placeholder="••••••••"
-                                                className="pl-10 bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-blue-500 transition-all duration-300"
+                                                className="pl-10 pr-10 bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:border-blue-500 focus:ring-blue-500 transition-all duration-300"
                                                 required
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={togglePasswordVisibility}
+                                                className="absolute right-3 top-3 text-white/40 hover:text-white/60 transition-colors"
+                                            >
+                                                {showPassword ? 
+                                                    <EyeOff className="h-4 w-4" /> : 
+                                                    <Eye className="h-4 w-4" />
+                                                }
+                                            </button>
                                         </div>
                                     </div>
                                     

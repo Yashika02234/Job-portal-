@@ -175,3 +175,153 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", success: false });
   }
 };
+
+export const updateExperience = async (req, res) => {
+  try {
+    const { experience } = req.body;
+    
+    if (!experience) {
+      return res
+        .status(400)
+        .json({ message: "No experience data provided", success: false });
+    }
+    
+    let experienceArray;
+    try {
+      // Try to parse the experience data if it's a JSON string
+      experienceArray = typeof experience === 'string' ? JSON.parse(experience) : experience;
+    } catch (e) {
+      return res
+        .status(400)
+        .json({ message: "Invalid experience data format", success: false });
+    }
+    
+    const userId = req.id;
+    let user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User not found", success: false });
+    }
+    
+    // Update the experience array
+    user.profile.experience = experienceArray;
+    await user.save();
+    
+    user = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      profile: user.profile,
+    };
+    
+    return res
+      .status(200)
+      .json({ message: "Experience updated successfully", user, success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", success: false });
+  }
+};
+
+export const updateEducation = async (req, res) => {
+  try {
+    const { education } = req.body;
+    
+    if (!education) {
+      return res
+        .status(400)
+        .json({ message: "No education data provided", success: false });
+    }
+    
+    let educationArray;
+    try {
+      // Try to parse the education data if it's a JSON string
+      educationArray = typeof education === 'string' ? JSON.parse(education) : education;
+    } catch (e) {
+      return res
+        .status(400)
+        .json({ message: "Invalid education data format", success: false });
+    }
+    
+    const userId = req.id;
+    let user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User not found", success: false });
+    }
+    
+    // Update the education array
+    user.profile.education = educationArray;
+    await user.save();
+    
+    user = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      profile: user.profile,
+    };
+    
+    return res
+      .status(200)
+      .json({ message: "Education updated successfully", user, success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", success: false });
+  }
+};
+
+export const updateCertifications = async (req, res) => {
+  try {
+    const { certifications } = req.body;
+    
+    if (!certifications) {
+      return res
+        .status(400)
+        .json({ message: "No certifications data provided", success: false });
+    }
+    
+    let certificationsArray;
+    try {
+      // Try to parse the certifications data if it's a JSON string
+      certificationsArray = typeof certifications === 'string' ? JSON.parse(certifications) : certifications;
+    } catch (e) {
+      return res
+        .status(400)
+        .json({ message: "Invalid certifications data format", success: false });
+    }
+    
+    const userId = req.id;
+    let user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User not found", success: false });
+    }
+    
+    // Update the certifications array
+    user.profile.certifications = certificationsArray;
+    await user.save();
+    
+    user = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      profile: user.profile,
+    };
+    
+    return res
+      .status(200)
+      .json({ message: "Certifications updated successfully", user, success: true });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error", success: false });
+  }
+};

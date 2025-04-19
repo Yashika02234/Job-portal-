@@ -34,6 +34,22 @@ const userSchema = new mongoose.Schema(
         type: String, // URL of photo.
         default: "",
       },
+      title: { type: String },
+      location: { type: String },
+      available: { type: Boolean, default: false },
+      experience: [{
+        company: { type: String },
+        position: { type: String },
+        duration: { type: String },
+        description: { type: String }
+      }],
+      education: [{
+        institution: { type: String },
+        degree: { type: String },
+        duration: { type: String },
+        description: { type: String }
+      }],
+      certifications: [{ type: String }]
     },
   },
   { timestamps: true } // This enables createdAt & updatedAt

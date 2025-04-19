@@ -59,6 +59,13 @@ const EditCompany = () => {
         // If not found in store, fetch from API
         fetchCompany()
       }
+    } else if (id) {
+      // If we have an ID but no companies loaded yet, fetch directly
+      fetchCompany()
+    } else {
+      // If no ID provided, redirect back to companies list
+      toast.error("No company ID provided")
+      navigate("/admin/companies")
     }
   }, [id, companies])
 
@@ -107,6 +114,9 @@ const EditCompany = () => {
     }
     
     setLoading(true)
+    // Show a loading toast
+    const loadingToast = toast.loading("Updating company information...")
+    
     try {
       const response = await axios.put(
         `${COMPANY_API_END_POINT}/update/${id}`,
@@ -114,13 +124,21 @@ const EditCompany = () => {
         { withCredentials: true }
       )
       
+      // Dismiss the loading toast
+      toast.dismiss(loadingToast)
+      
       if (response.data.success) {
         toast.success(response.data.message || "Company updated successfully")
-        navigate("/admin/companies")
+        // Wait briefly before navigating to give toast time to display
+        setTimeout(() => {
+          navigate("/admin/companies")
+        }, 1000)
       } else {
         toast.error(response.data.message || "Failed to update company")
       }
     } catch (error) {
+      // Dismiss the loading toast
+      toast.dismiss(loadingToast)
       console.error("Error updating company:", error)
       toast.error(error.response?.data?.message || "Failed to update company")
     } finally {

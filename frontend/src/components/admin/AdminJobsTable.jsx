@@ -33,6 +33,7 @@ const AdminJobsTable = () => {
     const [statusUpdateOpen, setStatusUpdateOpen] = useState(false);
     const [jobToUpdate, setJobToUpdate] = useState(null);
     const [newStatus, setNewStatus] = useState('active');
+    const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -50,11 +51,37 @@ const AdminJobsTable = () => {
     },[allAdminJobs,searchJobByText])
 
     // Handle job deletion
-    const handleDeleteJob = () => {
-        // TODO: Implement actual API call to delete job
-        toast.success(`Job "${jobToDelete?.title}" deleted successfully`);
-        setDeleteConfirmOpen(false);
-        setJobToDelete(null);
+    const handleDeleteJob = async () => {
+        if (!jobToDelete || !jobToDelete._id) {
+            toast.error("No job selected for deletion");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.delete(`${JOB_API_END_POINT}/delete/${jobToDelete._id}`, {
+                withCredentials: true
+            });
+            
+            if (response.data.success) {
+                toast.success(`Job "${jobToDelete?.title}" deleted successfully`);
+                
+                // Remove the job from local state
+                const updatedJobs = allAdminJobs.filter(job => job._id !== jobToDelete._id);
+                dispatch(setAllAdminJobs(updatedJobs));
+                
+                // Close dialog
+                setDeleteConfirmOpen(false);
+                setJobToDelete(null);
+            } else {
+                toast.error(response.data.message || 'Failed to delete job');
+            }
+        } catch (error) {
+            console.error("Error deleting job:", error);
+            toast.error(error.response?.data?.message || "An error occurred while deleting the job");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Handle job status update
@@ -312,6 +339,7 @@ const AdminJobsTable = () => {
                             variant="outline"
                             className="border-slate-700 text-white hover:bg-slate-800"
                             onClick={() => setDeleteConfirmOpen(false)}
+                            disabled={loading}
                         >
                             Cancel
                         </Button>
@@ -319,8 +347,14 @@ const AdminJobsTable = () => {
                             variant="destructive"
                             className="bg-red-600 hover:bg-red-700 text-white"
                             onClick={handleDeleteJob}
+                            disabled={loading}
                         >
-                            Delete Job
+                            {loading ? (
+                                <div className="flex items-center">
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Deleting...
+                                </div>
+                            ) : 'Delete Job'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

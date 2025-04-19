@@ -89,11 +89,41 @@ const CompaniesTable = () => {
     };
     
     // Handle company deletion
-    const handleDeleteCompany = () => {
-        // TODO: Implement actual API call to delete company
-        toast.success(`Company "${companyToDelete?.name}" deleted successfully`);
-        setDeleteConfirmOpen(false);
-        setCompanyToDelete(null);
+    const handleDeleteCompany = async () => {
+        if (!companyToDelete) return;
+
+        try {
+            const response = await axios.delete(
+                `${COMPANY_API_END_POINT}/delete/${companyToDelete._id}`, 
+                { withCredentials: true }
+            );
+            
+            if (response.data.success) {
+                // Remove the company from the state
+                const updatedCompanies = companies.filter(company => company._id !== companyToDelete._id);
+                dispatch(setCompanies(updatedCompanies));
+                
+                // Also refetch jobs to ensure the UI is in sync
+                try {
+                    const jobsRes = await axios.get(`${JOB_API_END_POINT}/getadminjobs`, {withCredentials: true});
+                    if (jobsRes.data.success) {
+                        dispatch(setAllAdminJobs(jobsRes.data.jobs));
+                    }
+                } catch (error) {
+                    console.error("Error refreshing jobs data:", error);
+                }
+                
+                toast.success(response.data.message || `Company "${companyToDelete.name}" deleted successfully`);
+            } else {
+                toast.error(response.data.message || "Failed to delete company");
+            }
+        } catch (error) {
+            console.error("Error deleting company:", error);
+            toast.error(error.response?.data?.message || "Failed to delete company");
+        } finally {
+            setDeleteConfirmOpen(false);
+            setCompanyToDelete(null);
+        }
     };
     
     // Open delete confirmation dialog

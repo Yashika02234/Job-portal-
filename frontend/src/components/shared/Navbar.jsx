@@ -194,6 +194,12 @@ const Navbar = () => {
                                 </NavLink>
                             </motion.li>
                             <motion.li custom={3} variants={navLinksVariants} initial="hidden" animate="visible">
+                                <NavLink to="/my-applications" isActive={isActive('/my-applications')}>
+                                    <Bell className="w-4 h-4 mr-1.5" />
+                                    My Applications
+                                </NavLink>
+                            </motion.li>
+                            <motion.li custom={4} variants={navLinksVariants} initial="hidden" animate="visible">
                                 <NavLink to="/about" isActive={isActive('/about')}>
                                     <Search className="w-4 h-4 mr-1.5" />
                                     About Us
@@ -419,6 +425,12 @@ const Navbar = () => {
                                             <MobileNavLink to="/jobs" onClick={toggleMobileMenu}>
                                                 <Briefcase className="w-5 h-5 mr-3 text-purple-400" />
                                                 Jobs
+                                            </MobileNavLink>
+                                        </motion.li>
+                                        <motion.li variants={itemVariants}>
+                                            <MobileNavLink to="/my-applications" onClick={toggleMobileMenu}>
+                                                <Bell className="w-5 h-5 mr-3 text-purple-400" />
+                                                My Applications
                                             </MobileNavLink>
                                         </motion.li>
                                         <motion.li variants={itemVariants}>

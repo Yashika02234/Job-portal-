@@ -8,6 +8,7 @@ import CompanyDetails from './components/admin/CompanyDetails'
 import PostJob from './components/admin/PostJob'
 import JobEdit from './components/admin/JobEdit'
 import ProtectedRoute from './components/admin/ProtectedRoute'
+import UserProtectedRoute from './components/user/UserProtectedRoute'
 import AnalyticsDashboard from './components/admin/AnalyticsDashboard'
 import ManageCompanies from './components/admin/ManageCompanies'
 import EditCompany from './components/admin/EditCompany'
@@ -20,6 +21,7 @@ import Jobs from './components/Jobs'
 import JobDescription from './components/JobsDescription'
 import { BackGroundLayout } from './components/Layouts/BackgroudLayout'
 import Profile from './components/Profile'
+import ApplicationStatus from './components/user/ApplicationStatus'
 import { ThemeProvider } from 'next-themes'
 import './App.css'
 import AllApplicants from './components/admin/AllApplicants'
@@ -56,7 +58,11 @@ const appRouter = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <Profile />
+    element: <UserProtectedRoute><Profile /></UserProtectedRoute>
+  },
+  {
+    path: "/my-applications",
+    element: <UserProtectedRoute><ApplicationStatus /></UserProtectedRoute>
   },
   // admin ke liye yha se start hoga
   {
