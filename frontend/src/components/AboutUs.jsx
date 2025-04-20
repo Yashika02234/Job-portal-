@@ -17,38 +17,38 @@ const AboutUs = () => {
   // Team members
   const teamMembers = [
     {
-      name: "Sarah Johnson",
-      role: "CEO & Founder",
-      bio: "Ex-Google hiring manager with a passion for connecting talent with opportunity.",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      name: "Ayush Ranjan",
+      role: "Backend Developer",
+      bio: "Backend dev building secure, scalable APIs with Node.js & Express..",
+      image: "/image/ayush.jpg",
       socialLinks: ["twitter", "linkedin"]
     },
     {
-      name: "Michael Chen",
-      role: "CTO",
-      bio: "Previously led engineering teams at top tech companies with a focus on AI-powered recruiting.",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
+      name: "Hriksesh kumar",
+      role: "Frontend Developer",
+      bio: "Frontend dev crafting clean, responsive UIs with React & Tailwind.",
+      image: "/image/atul.JPG",
       socialLinks: ["twitter", "linkedin", "github"]
     },
     {
-      name: "Aisha Patel",
-      role: "Head of Product",
-      bio: "Product visionary with experience building platforms that connect people and opportunities.",
-      image: "https://randomuser.me/api/portraits/women/65.jpg",
+      name: "Anika Garg",
+      role: "Frontend Developer",
+      bio: "JavaScript lover building fast, interactive web apps.",
+      image: "/image/Anika.jpeg",
       socialLinks: ["linkedin"]
     },
     {
-      name: "David Wilson",
-      role: "Head of Partnerships",
-      bio: "Built relationships with over 500 companies to create job opportunities for our users.",
-      image: "https://randomuser.me/api/portraits/men/86.jpg",
+      name: "Samadhan Erande",
+      role: "Backend Developer",
+      bio: "Server-side pro handling data, logic, and performance behind the scenes.",
+      image: "/image/samadhan.jpg",
       socialLinks: ["twitter", "linkedin"]
     },
     {
-      name: "Emily Rodriguez",
-      role: "Chief Marketing Officer",
-      bio: "Digital marketing strategist with expertise in building brands that resonate with global audiences.",
-      image: "https://randomuser.me/api/portraits/women/33.jpg",
+      name: "Yashika Agarwal",
+      role: "Frontend Developer",
+      bio: "UI-focused dev turning designs into smooth user experiences.",
+      image: "/image/yashika.jpeg",
       socialLinks: ["twitter", "linkedin"]
     },
   ];

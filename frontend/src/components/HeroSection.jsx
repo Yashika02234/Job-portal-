@@ -38,39 +38,55 @@ const HeroSection = () => {
                         </motion.div>
                     )}
 
-                    <h1 className='text-4xl lg:text-5xl font-bold leading-tight text-gray-300'>
-                        Discover Opportunities &<br />
-                        Advance Your <span className='text-[#6A38C2]'>Career</span>
-                    </h1>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <h1 className='text-4xl lg:text-5xl font-bold leading-tight text-gray-300'>
+                            Discover Opportunities &<br />
+                            Advance Your <span className='text-[#6A38C2]'>Career</span>
+                        </h1>
 
-                    <p className='text-lg text-gray-400'>
-                        Welcome to <span className='font-semibold text-[#6A38C2]'>Carevo</span>, the platform where top talent connects with leading employers.
-                        Whether you're looking to advance your career or hire skilled professionals, Carevo makes the process simple and efficient.
-                    </p>
+                        <p className='text-lg text-gray-400 mt-6'>
+                            Welcome to <span className='font-semibold text-[#6A38C2]'>Carevo</span>, where innovation meets opportunity.
+                            Our AI-powered platform connects talented professionals with leading employers,
+                            making your career journey seamless and rewarding.
+                        </p>
 
-                    <p className='text-lg text-gray-400'>
-                        Start exploring new opportunities today.
-                    </p>
-
-                    <div className='mt-2'>
-                        <button className='px-6 py-3 bg-[#6A38C2] text-white font-semibold rounded-full hover:bg-[#572fa1] transition'
-                            onClick={() => navigate('/jobs')}>
-                            Get Started
-                        </button>
-                    </div>
+                        <div className='mt-8 flex gap-4 justify-center lg:justify-start'>
+                            <button 
+                                className='px-6 py-3 bg-gradient-to-r from-[#6A38C2] to-[#8A3FFC] text-white font-semibold rounded-full hover:from-[#572fa1] hover:to-[#7435d3] transition-all duration-300 transform hover:scale-105'
+                                onClick={() => navigate('/jobs')}
+                            >
+                                Explore Jobs
+                            </button>
+                            <button 
+                                className='px-6 py-3 border-2 border-[#6A38C2] text-white font-semibold rounded-full hover:bg-[#6A38C2]/10 transition-all duration-300'
+                                onClick={() => navigate('/signup')}
+                            >
+                                Join Now
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
 
-
-                <img
-                    src="/image/HeroSection.png"
-                    alt="Hero Section Illustration"
-                    className='h-80 lg:h-96 w-auto mt-10 lg:mt-0'
-                />
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="relative hidden lg:block"
+                >
+                    <img
+                        src="/image/HeroSection.png"
+                        alt="Career Growth Illustration"
+                        className='h-96 w-auto relative z-10'
+                    />
+                </motion.div>
             </div>
 
             <div className='mt-9'>
                 <div className='flex flex-col lg:flex-row items-center justify-around mt-12 px-6 lg:px-16'>
-
                     <div className='relative w-fit'>
                         <svg
                             className='w-[28rem] absolute top-3 left-8 z-0'
@@ -85,14 +101,14 @@ const HeroSection = () => {
                         </svg>
                         <img
                             src="/image/SearchSection.png"
-                            alt="Hero Section Illustration"
+                            alt="Search Section Illustration"
                             className='h-80 lg:h-96 w-auto mt-10 lg:mt-0 relative z-10'
                         />
                     </div>
 
                     <div className='flex flex-col gap-6 max-w-2xl text-center lg:text-left mt-10 lg:mt-0'>
                         <h1 className='text-4xl lg:text-5xl font-bold leading-tight text-gray-300'>
-                            If <span className='text-[#6A38C2]'>opportunity</span> doesn't knock, build a door.
+                            If <span className='text-[#6A38C2]'>opportunity</span> doesn't knock,<br/> build a door.
                         </h1>
                         <p className='text-lg text-gray-400'>
                             Connecting talented job seekers with top employers through a fast, smart, and hassle-free
@@ -138,15 +154,11 @@ const HeroSection = () => {
                         <p className="text-lg font-semibold text-white">Freelancer</p>
                     </div>
                 </div>
-                    <div className="w-[40rem] h-[30rem] top-[-2rem] right-[-20rem] absolute border-[0.5rem] rounded-full rotate-[140deg] border-[#A23CE7] blur-lg pointer-events-none"></div>
-                    <div className="absolute w-[50rem] h-[40rem] top-[-15rem] left-[-20rem] -rotate-[11.26deg]  bg-[#102A6C] rounded-full blur-[250px] pointer-events-none">
-                    </div>
+                <div className="w-[40rem] h-[30rem] top-[-2rem] right-[-20rem] absolute border-[0.5rem] rounded-full rotate-[140deg] border-[#A23CE7] blur-lg pointer-events-none"></div>
+                <div className="absolute w-[50rem] h-[40rem] top-[-15rem] left-[-20rem] -rotate-[11.26deg] bg-[#102A6C] rounded-full blur-[250px] pointer-events-none"></div>
             </div>
-
-
-
         </div>
     )
 }
 
-export default HeroSection
+export default HeroSection;
