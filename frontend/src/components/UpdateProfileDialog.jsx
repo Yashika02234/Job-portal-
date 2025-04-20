@@ -108,6 +108,13 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     const handleResumeChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Check file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Resume file is too large', {
+                    description: 'Maximum file size is 5MB. Please select a smaller file.',
+                });
+                return;
+            }
             setResumeFile(file);
             setResumePreview(file.name);
         }
@@ -116,6 +123,13 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Check file size (2MB max)
+            if (file.size > 2 * 1024 * 1024) {
+                toast.error('Profile photo is too large', {
+                    description: 'Maximum file size is 2MB. Please select a smaller image.',
+                });
+                return;
+            }
             setProfilePhoto(file);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -179,6 +193,9 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                     'Content-Type': 'multipart/form-data',
                 },
                 withCredentials: true,
+                timeout: 60000, // 60 second timeout
+                maxContentLength: 10 * 1024 * 1024, // 10MB max content length
+                maxBodyLength: 10 * 1024 * 1024, // 10MB max body length
             });
 
             clearInterval(progressInterval);
@@ -209,9 +226,18 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
             setIsUploading(false);
             setLoading(false);
             console.error('Error updating profile:', error);
+            console.error('Error details:', error.response?.data);
+            
+            // Handle timeout errors more specifically
+            let errorMessage = 'Something went wrong';
+            if (error.code === 'ECONNABORTED' || (error.message && error.message.includes('timeout'))) {
+                errorMessage = 'Request timed out. The server took too long to respond.';
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
             
             toast.error('Failed to update profile', {
-                description: error.response?.data?.message || 'Something went wrong',
+                description: errorMessage,
                 action: {
                     label: 'Try Again',
                     onClick: () => handleSubmit(e)

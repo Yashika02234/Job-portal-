@@ -126,16 +126,8 @@ export const logout = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { fullname, email, phoneNumber, bio, skills } = req.body;
-    const file = req.file;
-
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-
-    let skillsArray;
-    if (skills) {
-      skillsArray = skills.split(",");
-    }
+    const { fullname, email, phoneNumber, bio, title, location, available, skills } = req.body;
+    const files = req.files;
 
     const userId = req.id;
     let user = await User.findById(userId);
@@ -145,16 +137,94 @@ export const updateProfile = async (req, res) => {
         .json({ message: "User not found", success: false });
     }
 
+    // Handle resume file if provided
+    if (files && files.resume && files.resume[0]) {
+      try {
+        const resumeFile = files.resume[0];
+        
+        // Check file size - limit to 5MB
+        if (resumeFile.size > 5 * 1024 * 1024) {
+          return res.status(400).json({ 
+            message: "Resume file is too large. Maximum size is 5MB", 
+            success: false 
+          });
+        }
+        
+        const resumeUri = getDataUri(resumeFile);
+        
+        // Set timeout and optimization options for Cloudinary
+        const resumeResponse = await cloudinary.uploader.upload(resumeUri.content, {
+          resource_type: 'auto',
+          folder: 'resumes',
+          timeout: 60000, // 60 second timeout
+        });
+        
+        if (resumeResponse) {
+          user.profile.resume = resumeResponse.secure_url;
+          user.profile.resumeOriginalName = resumeFile.originalname;
+        }
+      } catch (uploadError) {
+        console.log("Resume upload error:", uploadError);
+        // Continue with profile update even if resume upload fails
+      }
+    }
+
+    // Handle profile photo if provided
+    if (files && files.profilePhoto && files.profilePhoto[0]) {
+      try {
+        const photoFile = files.profilePhoto[0];
+        
+        // Check file size - limit to 2MB
+        if (photoFile.size > 2 * 1024 * 1024) {
+          return res.status(400).json({ 
+            message: "Profile photo is too large. Maximum size is 2MB", 
+            success: false 
+          });
+        }
+        
+        const photoUri = getDataUri(photoFile);
+        
+        // Set timeout and optimization options for Cloudinary
+        const photoResponse = await cloudinary.uploader.upload(photoUri.content, {
+          resource_type: 'image',
+          folder: 'profile_photos',
+          transformation: [
+            { width: 500, height: 500, crop: 'limit' },
+            { quality: 'auto' }
+          ],
+          timeout: 30000, // 30 second timeout
+        });
+        
+        if (photoResponse) {
+          user.profile.profilePhoto = photoResponse.secure_url;
+        }
+      } catch (uploadError) {
+        console.log("Profile photo upload error:", uploadError);
+        // Continue with profile update even if photo upload fails
+      }
+    }
+
+    // Parse skills from JSON string
+    let skillsArray;
+    if (skills) {
+      try {
+        skillsArray = typeof skills === 'string' ? JSON.parse(skills) : skills;
+      } catch (error) {
+        console.log("Error parsing skills:", error);
+      }
+    }
+
+    // Update user fields
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
+    
+    // Update profile fields
     if (bio) user.profile.bio = bio;
+    if (title) user.profile.title = title;
+    if (location) user.profile.location = location;
+    if (available !== undefined) user.profile.available = available === 'true';
     if (skillsArray) user.profile.skills = skillsArray;
-
-    if(cloudResponse) {
-      user.profile.resume = cloudResponse.secure_url;
-      user.profile.resumeOriginalName = file.originalname;
-    }
 
     await user.save();
 
@@ -171,8 +241,11 @@ export const updateProfile = async (req, res) => {
       .status(200)
       .json({ message: "Profile updated Successfully", user, success: true });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal Server Error", success: false });
+    console.log("Error in updateProfile:", error);
+    res.status(500).json({ 
+      message: error.message || "Internal Server Error", 
+      success: false 
+    });
   }
 };
 
