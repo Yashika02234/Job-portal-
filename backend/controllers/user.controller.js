@@ -154,10 +154,10 @@ export const updateProfile = async (req, res) => {
         
         // Set timeout and optimization options for Cloudinary
         const resumeResponse = await cloudinary.uploader.upload(resumeUri.content, {
-          resource_type: 'auto',
+          resource_type: 'raw', // specifically for non-image files like PDF/DOC/DOCX
           folder: 'resumes',
           timeout: 60000, // 60 second timeout
-        });
+        });        
         
         if (resumeResponse) {
           user.profile.resume = resumeResponse.secure_url;
