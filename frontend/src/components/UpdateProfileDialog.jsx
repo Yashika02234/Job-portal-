@@ -200,9 +200,9 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
 
             clearInterval(progressInterval);
             setUploadProgress(100);
-            
+            console.log("response after update", response.data.user);
             setTimeout(() => {
-                dispatch(setUser(response.data));
+                dispatch(setUser(response.data.user));
                 setSuccess(true);
                 setIsUploading(false);
                 

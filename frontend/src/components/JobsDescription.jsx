@@ -39,7 +39,7 @@ const JobDescription = () => {
       applyRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
+    
   const applyJobHandler = async () => {
     try {
       setLoading(true);
@@ -92,7 +92,10 @@ const JobDescription = () => {
         }
       } catch (error) {
         console.log(error);
-        toast.error("Failed to load job details");
+        if(!user){
+          toast.message("Loggedin First");
+          navigate('login');
+        }
       } finally {
         // Add slight delay to show loading animation
         setTimeout(() => setLoading(false), 800);
