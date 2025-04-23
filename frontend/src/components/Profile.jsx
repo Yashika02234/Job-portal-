@@ -3,10 +3,10 @@ import Navbar from './shared/Navbar';
 import Footer from './shared/Footer';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
-import { 
-  Mail, Pen, Briefcase, Download, ExternalLink, 
-  Calendar, MapPin, GraduationCap, Building, Award,
-  User, Phone, Sparkles, ChevronRight, Clock, X, Plus
+import {
+    Mail, Pen, Briefcase, Download, ExternalLink,
+    Calendar, MapPin, GraduationCap, Building, Award,
+    User, Phone, Sparkles, ChevronRight, Clock, X, Plus
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import UpdateProfileDialog from './UpdateProfileDialog';
@@ -27,17 +27,17 @@ const Profile = () => {
     const { user } = useSelector(store => store.auth);
     const [scrollY, setScrollY] = useState(0);
     const dispatch = useDispatch();
-    
+
     // Loading states
     const [loadingExp, setLoadingExp] = useState(false);
     const [loadingEdu, setLoadingEdu] = useState(false);
     const [loadingCert, setLoadingCert] = useState(false);
-    
+
     // States for experience editing
     const [isEditingExp, setIsEditingExp] = useState(false);
     const [isEditingEdu, setIsEditingEdu] = useState(false);
     const [isEditingCert, setIsEditingCert] = useState(false);
-    
+
     // Editable experience data
     const [workExperience, setWorkExperience] = useState(user?.profile?.experience || [
         {
@@ -68,7 +68,7 @@ const Profile = () => {
         "UI/UX Design Fundamentals",
         "Cloud Architecture Basics"
     ]);
-    
+
     // New experience states
     const [newExp, setNewExp] = useState({
         company: "",
@@ -76,7 +76,7 @@ const Profile = () => {
         duration: "",
         description: ""
     });
-    
+
     // New education state
     const [newEdu, setNewEdu] = useState({
         institution: "",
@@ -84,7 +84,7 @@ const Profile = () => {
         duration: "",
         description: ""
     });
-    
+
     // New certification state
     const [newCert, setNewCert] = useState("");
 
@@ -97,7 +97,7 @@ const Profile = () => {
                 { experience: workExperience },
                 { withCredentials: true }
             );
-            
+
             if (response.data.success) {
                 dispatch(setUser(response.data.user));
                 toast.success('Work experience updated successfully');
@@ -109,7 +109,7 @@ const Profile = () => {
             setLoadingExp(false);
         }
     };
-    
+
     const saveEducationToBackend = async () => {
         try {
             setLoadingEdu(true);
@@ -118,7 +118,7 @@ const Profile = () => {
                 { education },
                 { withCredentials: true }
             );
-            
+
             if (response.data.success) {
                 dispatch(setUser(response.data.user));
                 toast.success('Education updated successfully');
@@ -130,7 +130,7 @@ const Profile = () => {
             setLoadingEdu(false);
         }
     };
-    
+
     const saveCertificationsToBackend = async () => {
         try {
             setLoadingCert(true);
@@ -139,7 +139,7 @@ const Profile = () => {
                 { certifications },
                 { withCredentials: true }
             );
-            
+
             if (response.data.success) {
                 dispatch(setUser(response.data.user));
                 toast.success('Certifications updated successfully');
@@ -169,7 +169,7 @@ const Profile = () => {
             [e.target.name]: e.target.value
         });
     };
-    
+
     // Handle changes for new education
     const handleEduChange = (e) => {
         setNewEdu({
@@ -177,7 +177,7 @@ const Profile = () => {
             [e.target.name]: e.target.value
         });
     };
-    
+
     // Add new experience
     const addExperience = () => {
         if (newExp.company && newExp.position) {
@@ -189,12 +189,12 @@ const Profile = () => {
                 duration: "",
                 description: ""
             });
-            
+
             // Save to backend
             saveExperienceToBackend();
         }
     };
-    
+
     // Add new education
     const addEducation = () => {
         if (newEdu.institution && newEdu.degree) {
@@ -206,50 +206,50 @@ const Profile = () => {
                 duration: "",
                 description: ""
             });
-            
+
             // Save to backend
             saveEducationToBackend();
         }
     };
-    
+
     // Add new certification
     const addCertification = () => {
         if (newCert.trim()) {
             const updatedCertifications = [...certifications, newCert];
             setCertifications(updatedCertifications);
             setNewCert("");
-            
+
             // Save to backend
             saveCertificationsToBackend();
         }
     };
-    
+
     // Remove experience
     const removeExperience = (index) => {
         const updatedExp = [...workExperience];
         updatedExp.splice(index, 1);
         setWorkExperience(updatedExp);
-        
+
         // Save to backend
         saveExperienceToBackend();
     };
-    
+
     // Remove education
     const removeEducation = (index) => {
         const updatedEdu = [...education];
         updatedEdu.splice(index, 1);
         setEducation(updatedEdu);
-        
+
         // Save to backend
         saveEducationToBackend();
     };
-    
+
     // Remove certification
     const removeCertification = (index) => {
         const updatedCert = [...certifications];
         updatedCert.splice(index, 1);
         setCertifications(updatedCert);
-        
+
         // Save to backend
         saveCertificationsToBackend();
     };
@@ -262,7 +262,7 @@ const Profile = () => {
         }
         setIsEditingExp(!isEditingExp);
     };
-    
+
     const toggleEditingEdu = () => {
         if (isEditingEdu) {
             // If turning off editing mode, save the changes
@@ -270,7 +270,7 @@ const Profile = () => {
         }
         setIsEditingEdu(!isEditingEdu);
     };
-    
+
     const toggleEditingCert = () => {
         if (isEditingCert) {
             // If turning off editing mode, save the changes
@@ -281,14 +281,14 @@ const Profile = () => {
 
     const fadeInUpVariants = {
         hidden: { opacity: 0, y: 20 },
-        visible: (custom) => ({ 
-            opacity: 1, 
+        visible: (custom) => ({
+            opacity: 1,
             y: 0,
-            transition: { 
+            transition: {
                 delay: custom * 0.1,
                 duration: 0.5,
                 ease: "easeOut"
-            } 
+            }
         })
     };
 
@@ -299,10 +299,10 @@ const Profile = () => {
     };
 
     const renderTabContent = () => {
-        switch(activeTab) {
+        switch (activeTab) {
             case 'profile':
                 return (
-                    <motion.div 
+                    <motion.div
                         key="profile"
                         variants={tabVariants}
                         initial="hidden"
@@ -311,7 +311,7 @@ const Profile = () => {
                         className="space-y-8"
                     >
                         {/* About Me Section */}
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={0}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
@@ -324,9 +324,9 @@ const Profile = () => {
                                 {user?.profile?.bio || 'No bio available. Update your profile to add a bio.'}
                             </p>
                         </motion.div>
-                        
+
                         {/* Skills Section */}
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={1}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
@@ -355,7 +355,7 @@ const Profile = () => {
                         </motion.div>
 
                         {/* Contact Information */}
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={2}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
@@ -387,7 +387,7 @@ const Profile = () => {
                         </motion.div>
 
                         {/* Resume Section */}
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={3}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
@@ -399,29 +399,34 @@ const Profile = () => {
                             {user?.profile?.resume ? (
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1 bg-slate-800/50 p-4 rounded-lg text-white">
-                                        <span className="block truncate">{user?.profile?.resumeOriginalName || 'Your Resume'}</span>
+                                        <span className="block truncate">
+                                            {user?.profile?.resumeOriginalName || 'Your Resume'}
+                                        </span>
                                     </div>
+
                                     <a
-                                        href={user?.profile?.resume}
+                                        href={`https://docs.google.com/gview?url=${encodeURIComponent(user?.profile?.resume)}&embedded=true`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-3 rounded-lg transition-all duration-300 shadow-lg shadow-purple-500/20"
                                     >
                                         <ExternalLink className="h-5 w-5" />
                                     </a>
+
                                     <a
                                         href={user?.profile?.resume}
-                                        download
+                                        download={user?.profile?.resumeOriginalName || 'Your_Resume.pdf'}
                                         className="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-lg transition-all duration-300"
                                     >
                                         <Download className="h-5 w-5" />
                                     </a>
+
                                 </div>
                             ) : (
                                 <div className="text-center p-6 border border-dashed border-gray-500 rounded-lg text-gray-400">
                                     <p>No resume uploaded yet</p>
-                                    <Button 
-                                        onClick={() => setOpen(true)} 
+                                    <Button
+                                        onClick={() => setOpen(true)}
                                         variant="outline"
                                         className="mt-4 border-purple-500/30 text-white hover:bg-purple-500/20"
                                     >
@@ -434,14 +439,14 @@ const Profile = () => {
                 );
             case 'experience':
                 return (
-                    <motion.div 
+                    <motion.div
                         key="experience"
                         variants={tabVariants}
                         initial="hidden"
                         animate="visible"
                         exit="exit"
                     >
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={0}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg"
@@ -451,7 +456,7 @@ const Profile = () => {
                                     <Building className="mr-2 h-5 w-5 text-purple-400" />
                                     Work Experience
                                 </h3>
-                                <Button 
+                                <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={toggleEditingExp}
@@ -466,11 +471,11 @@ const Profile = () => {
                                     ) : isEditingExp ? "Done" : "Edit"}
                                 </Button>
                             </div>
-                            
+
                             {workExperience.length > 0 ? (
                                 <div className="space-y-6 mb-8">
                                     {workExperience.map((exp, index) => (
-                                        <motion.div 
+                                        <motion.div
                                             key={index}
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -487,7 +492,7 @@ const Profile = () => {
                                                 {exp.duration}
                                             </div>
                                             <p className="text-gray-400">{exp.description}</p>
-                                            
+
                                             {isEditingExp && (
                                                 <motion.button
                                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -506,7 +511,7 @@ const Profile = () => {
                                     <p>No work experience added yet</p>
                                 </div>
                             )}
-                            
+
                             {isEditingExp && (
                                 <motion.div
                                     initial={{ opacity: 0, height: 0 }}
@@ -561,7 +566,7 @@ const Profile = () => {
                                             className="bg-slate-900/50 border-slate-700 text-white min-h-[100px]"
                                         />
                                     </div>
-                                    <Button 
+                                    <Button
                                         type="button"
                                         onClick={addExperience}
                                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
@@ -583,7 +588,7 @@ const Profile = () => {
                             )}
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUpVariants}
                             custom={1}
                             className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-lg mt-8"
@@ -593,7 +598,7 @@ const Profile = () => {
                                     <GraduationCap className="mr-2 h-5 w-5 text-purple-400" />
                                     Education
                                 </h3>
-                                <Button 
+                                <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={toggleEditingEdu}
@@ -608,11 +613,11 @@ const Profile = () => {
                                     ) : isEditingEdu ? "Done" : "Edit"}
                                 </Button>
                             </div>
-                            
+
                             {education.length > 0 ? (
                                 <div className="space-y-6 mb-8">
                                     {education.map((edu, index) => (
-                                        <motion.div 
+                                        <motion.div
                                             key={index}
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -629,7 +634,7 @@ const Profile = () => {
                                                 {edu.duration}
                                             </div>
                                             <p className="text-gray-400">{edu.description}</p>
-                                            
+
                                             {isEditingEdu && (
                                                 <motion.button
                                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -648,7 +653,7 @@ const Profile = () => {
                                     <p>No education history added yet</p>
                                 </div>
                             )}
-                            
+
                             {isEditingEdu && (
                                 <motion.div
                                     initial={{ opacity: 0, height: 0 }}
@@ -703,7 +708,7 @@ const Profile = () => {
                                             className="bg-slate-900/50 border-slate-700 text-white min-h-[100px]"
                                         />
                                     </div>
-                                    <Button 
+                                    <Button
                                         type="button"
                                         onClick={addEducation}
                                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
@@ -734,11 +739,11 @@ const Profile = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white pb-20">
             <Navbar />
-            
+
             {/* Header - Profile Banner */}
-            <div 
+            <div
                 className="w-full h-64 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 relative overflow-hidden"
-                style={{ 
+                style={{
                     backgroundImage: "url('/images/profile-bg.jpg')",
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
@@ -746,27 +751,27 @@ const Profile = () => {
                 }}
             >
                 {/* Parallax effect on background */}
-                <motion.div 
+                <motion.div
                     className="absolute inset-0 bg-grid-white/[0.05] bg-[size:50px_50px]"
                     style={{ y: scrollY * 0.2 }}
                 />
-                
+
                 {/* Glowing orbs */}
                 <div className="absolute -top-20 -left-20 w-60 h-60 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none"></div>
                 <div className="absolute -bottom-40 -right-20 w-80 h-80 bg-indigo-600/30 rounded-full blur-[100px] pointer-events-none"></div>
-                
+
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
             </div>
-            
+
             {/* Profile Header Information */}
             <div className="max-w-6xl mx-auto px-4 relative -mt-24 z-10">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className="flex flex-col md:flex-row items-start md:items-end gap-6 mb-8"
                 >
-                    <motion.div 
+                    <motion.div
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300, damping: 15 }}
                         className="relative"
@@ -786,7 +791,7 @@ const Profile = () => {
                             <Pen className="h-5 w-5 text-white" />
                         </motion.div>
                     </motion.div>
-                    
+
                     <div className="flex-1">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -795,12 +800,12 @@ const Profile = () => {
                         >
                             <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-2">
                                 {user?.fullname}
-                                <motion.div 
-                                    animate={{ 
+                                <motion.div
+                                    animate={{
                                         rotate: [0, 10, 0],
                                         scale: [1, 1.1, 1]
                                     }}
-                                    transition={{ 
+                                    transition={{
                                         duration: 2,
                                         repeat: Infinity,
                                         repeatType: "loop"
@@ -809,9 +814,9 @@ const Profile = () => {
                                     <Sparkles className="w-5 h-5 text-yellow-400" />
                                 </motion.div>
                             </h1>
-                            
+
                             <p className="text-xl text-gray-300 mt-1">{user?.profile?.title || 'Job Seeker'}</p>
-                            
+
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {user?.role && (
                                     <motion.div
@@ -838,14 +843,14 @@ const Profile = () => {
                             </div>
                         </motion.div>
                     </div>
-                    
+
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3, duration: 0.5 }}
                         className="mt-4 md:mt-0"
                     >
-                        <Button 
+                        <Button
                             onClick={() => setOpen(true)}
                             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-6 py-2 rounded-full"
                         >
@@ -854,24 +859,24 @@ const Profile = () => {
                         </Button>
                     </motion.div>
                 </motion.div>
-                
+
                 {/* Tab Navigation */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
                     className="mb-8 border-b border-slate-700/50 pb-2"
                 >
                     <div className="flex space-x-8">
-                        <TabButton 
-                            active={activeTab === 'profile'} 
+                        <TabButton
+                            active={activeTab === 'profile'}
                             onClick={() => setActiveTab('profile')}
                             icon={<User className="h-4 w-4 mr-2" />}
                         >
                             Profile
                         </TabButton>
-                        <TabButton 
-                            active={activeTab === 'experience'} 
+                        <TabButton
+                            active={activeTab === 'experience'}
                             onClick={() => setActiveTab('experience')}
                             icon={<Building className="h-4 w-4 mr-2" />}
                         >
@@ -879,13 +884,13 @@ const Profile = () => {
                         </TabButton>
                     </div>
                 </motion.div>
-                
+
                 {/* Tab Content */}
                 <AnimatePresence mode="wait">
                     {renderTabContent()}
                 </AnimatePresence>
             </div>
-            
+
             <UpdateProfileDialog open={open} setOpen={setOpen} />
             <div className="mt-20">
                 <Footer />
@@ -899,9 +904,8 @@ const TabButton = ({ children, active, onClick, icon }) => {
     return (
         <button
             onClick={onClick}
-            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:text-white relative ${
-                active ? 'text-white' : 'text-gray-400'
-            }`}
+            className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:text-white relative ${active ? 'text-white' : 'text-gray-400'
+                }`}
         >
             {icon}
             {children}
